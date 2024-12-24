@@ -3,6 +3,8 @@ using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Options;
 
 namespace ExpenseTracker.Data
 {
@@ -21,6 +23,12 @@ namespace ExpenseTracker.Data
         {
             base.OnModelCreating(builder);
 
+            var user = new IdentityRole("user");
+            user.NormalizedName = "user";
+            
+
+            builder.Entity<IdentityRole>().HasData(user);
+
             builder.Entity<User>().
              HasMany(u => u.Incomes).
              WithOne(i => i.User).
@@ -32,9 +40,15 @@ namespace ExpenseTracker.Data
             builder.Entity<User>().
                 Property(u => u.Balance).HasDefaultValue(0);
             builder.Entity<User>().
-                Property(u => u.AllowedMinus).HasDefaultValue(0);
+                Property(u => u.AllowedMinus).HasDefaultValue(0); 
 
 
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+
+            optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
         }
 
     }
