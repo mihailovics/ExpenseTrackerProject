@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ExpenseTracker.Models
 {
-    public class User : IdentityUser<int>
+    public class User : IdentityUser
     {
         [Required]
         public string Name { get; set; } = "";
