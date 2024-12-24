@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using ExpenseTracker.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseTracker.Controllers
@@ -17,7 +18,7 @@ namespace ExpenseTracker.Controllers
         {
             return View();
         }
-
+        [Authorize(Roles = "user")]
         public IActionResult Privacy()
         {
             return View();
