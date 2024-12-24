@@ -6,7 +6,7 @@ namespace ExpenseTracker.Models
     public class User : IdentityUser<int>
     {
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
         [Required]
         public decimal Balance { get; set; }
         [Required]
