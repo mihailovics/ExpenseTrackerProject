@@ -31,5 +31,33 @@ namespace ExpenseTracker.Controllers
            
             return View(AllIncomes);
         }
+
+        [HttpGet("Income/Delete/{id}")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var income = await dBContext.Incomes.FindAsync(id);
+            return View(income);
+        }
+
+        [HttpPost("Income/DeleteIncome")]
+        [Authorize(Roles = "user")]
+        //Zasto ne radi sa FromBody
+        public async Task<IActionResult> DeleteIncome([FromForm]int id) 
+        {
+            var income = await dBContext.Incomes.FindAsync(id);
+            if (ModelState.IsValid)
+            {
+                dBContext.Incomes.Remove(income);
+                await dBContext.SaveChangesAsync();
+                return RedirectToAction("GetAllIncomes");
+            }
+            else
+            {
+                return RedirectToAction("GetAllIncomes");
+            }
+            
+
+        }
     }
 }
