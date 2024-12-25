@@ -20,6 +20,32 @@ namespace ExpenseTracker.Controllers
             dBContext = DbContext;
         }
 
+        [HttpGet("Outcome/GetOutcomes")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> GetOutcomes()
+        {
+            List<Outcome> AllOutcomes = new List<Outcome>();
+            var pageNumberString = HttpContext.Request.Query["pageNumber"].FirstOrDefault();
+            int pageNumber = string.IsNullOrEmpty(pageNumberString) ? 1 : int.Parse(pageNumberString);
+            int pageSize = 5;
+
+            var user = _userManager.GetUserId(User);
+
+            IQueryable<Outcome> query = dBContext.Outcomes.Where(i => i.UserId == user);
+
+            int totalIncomes = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalIncomes / (double)pageSize);
+            List<Outcome> pagedOutcomes = await query
+                .Skip((pageNumber - 1) * pageSize) // Skip records from previous pages
+                .Take(pageSize) // Take records for the current page
+                .ToListAsync();
+
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = pageNumber;
+
+            return View(pagedOutcomes);
+        }
+
         [HttpGet("Outcome/GetAllOutcomes")]
         [Authorize(Roles = "user")]
         public async Task<IActionResult> GetAllOutcomes()

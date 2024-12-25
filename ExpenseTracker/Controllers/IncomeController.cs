@@ -20,15 +20,41 @@ namespace ExpenseTracker.Controllers
             dBContext = DbContext;
         }
 
+        [HttpGet("Income/GetIncomes/")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> GetIncomes() 
+        {
+            List<Income> AllIncomes = new List<Income>();
+            var pageNumberString = HttpContext.Request.Query["pageNumber"].FirstOrDefault();
+            int pageNumber = string.IsNullOrEmpty(pageNumberString) ? 1 : int.Parse(pageNumberString);
+            int pageSize = 5;
+
+            var user = _userManager.GetUserId(User);
+
+            IQueryable<Income> query = dBContext.Incomes.Where(i => i.UserId == user);
+
+            int totalIncomes = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalIncomes / (double)pageSize);
+            List<Income> pagedIncomes = await query
+                .Skip((pageNumber - 1) * pageSize) 
+                .Take(pageSize) 
+                .ToListAsync();
+
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = pageNumber;
+           
+            return View(pagedIncomes);
+        }
+        
         [HttpGet("Income/GetAllIncomes")]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> GetAllIncomes() 
+        public async Task<IActionResult> GetAllIncomes()
         {
             List<Income> AllIncomes = new List<Income>();
 
             var user = _userManager.GetUserId(User);
             AllIncomes = await dBContext.Incomes.Where(i => i.UserId == user).ToListAsync();
-           
+
             return View(AllIncomes);
         }
 
