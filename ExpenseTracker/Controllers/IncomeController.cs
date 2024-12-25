@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using ExpenseTracker.Data;
+using ExpenseTracker.DTOs;
 using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -21,7 +22,7 @@ namespace ExpenseTracker.Controllers
             dBContext = DbContext;
         }
 
-        [HttpGet("Income/GetIncomes/")]
+        [HttpGet("Income/GetIncomes")]
         [Authorize(Roles = "user")]
         public async Task<IActionResult> GetIncomes() 
         {
@@ -63,6 +64,35 @@ namespace ExpenseTracker.Controllers
             ViewBag.IncomeSum = incomeSum;
 
             return View(AllIncomes);
+        }
+
+        [HttpGet("Income/NewIncome")]
+        [Authorize(Roles="user")]
+        public async Task<IActionResult> NewIncome()
+        {
+            return View();
+        }
+
+        [HttpPost("Income/NewIncome")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> NewIncome(Income incomeModel)
+        {
+            var userId = _userManager.GetUserId(User);
+            var user = await dBContext.Users.FirstOrDefaultAsync(u=> u.Id == userId);
+            incomeModel.User = user;
+            if (ModelState.IsValid) 
+            {
+                
+                incomeModel.UserId = userId;
+                incomeModel.CreatedAt = DateTime.Now;
+
+                dBContext.Incomes.Add(incomeModel);
+                await dBContext.SaveChangesAsync();
+
+                return RedirectToAction("GetAllIncomes");
+            }
+            
+            return View(incomeModel);
         }
 
         [HttpGet("Income/Delete/{id}")]

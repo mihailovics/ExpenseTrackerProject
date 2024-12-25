@@ -48,7 +48,7 @@ namespace ExpenseTracker.Data
         {
             base.OnConfiguring(optionsBuilder);
 
-            optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
+           // optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
         }
 
     }

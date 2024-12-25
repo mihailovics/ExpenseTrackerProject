@@ -51,7 +51,7 @@ namespace ExpenseTracker.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Incomes");
+                    b.ToTable("Incomes", (string)null);
                 });
 
             modelBuilder.Entity("ExpenseTracker.Models.Outcome", b =>
@@ -83,7 +83,7 @@ namespace ExpenseTracker.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Outcomes");
+                    b.ToTable("Outcomes", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
