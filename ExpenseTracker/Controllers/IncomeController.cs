@@ -36,6 +36,7 @@ namespace ExpenseTracker.Controllers
         [Authorize(Roles = "user")]
         public async Task<IActionResult> Delete(int id)
         {
+            
             var income = await dBContext.Incomes.FindAsync(id);
             return View(income);
         }
