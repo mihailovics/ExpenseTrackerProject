@@ -1,19 +1,18 @@
 ﻿@model IEnumerable<ExpenseTracker.Models.Outcome>
 
 @{
-    ViewData["Title"] = "Get Outcomes";
+    ViewData["Title"] = "Get All Outcomes";
 }
 
 <h1 class="text-center">Get All Outcomes</h1>
 
-<p>
-    <a asp-action="Create">Add new Outcome</a>
-    <a class="float-end" href="/Outcome/GetAllOutcomes">View all outcomes</a>
-</p>
-<p class="d-flex justify-content-center">
-    Sum of shown outcomes: @ViewBag.OutcomeSum
-</p>
-@if (Model.Count() >0 ){
+<div>
+    <a href="/Outcome/GetOutcomes" class="btn btn-secondary">Back</a>
+    <p class="float-end">
+        Sum of all outcomes: @ViewBag.OutcomeSum
+    </p>
+</div>
+
 <table class="table">
     <thead>
         <tr>
@@ -49,32 +48,10 @@
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedAt)
             </td>
-            <td>|
+            <td>
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
-    <nav class="d-flex justify-content-center">
-        <ul class="pagination">
-            <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
-                <a class="page-link" href="/Income/GetIncomes?pageNumber=@(ViewBag.CurrentPage - 1)">Previous</a>
-            </li>
-
-            @for (int i = 1; i <= ViewBag.TotalPages; i++)
-            {
-                <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
-                    <a class="page-link" href="/Income/GetIncomes?pageNumber=@i">@i</a>
-                </li>
-            }
-
-            <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
-                <a class="page-link" href="/Income/GetIncomes?pageNumber=@(ViewBag.CurrentPage + 1)">Next</a>
-            </li>
-        </ul>
-    </nav>
-}
-else{
-    <p>No Outcome result.</p>
-}

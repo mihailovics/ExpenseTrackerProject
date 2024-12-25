@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Data;
+﻿using System.Linq;
+using ExpenseTracker.Data;
 using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -28,7 +29,7 @@ namespace ExpenseTracker.Controllers
             var pageNumberString = HttpContext.Request.Query["pageNumber"].FirstOrDefault();
             int pageNumber = string.IsNullOrEmpty(pageNumberString) ? 1 : int.Parse(pageNumberString);
             int pageSize = 5;
-
+            
             var user = _userManager.GetUserId(User);
 
             IQueryable<Income> query = dBContext.Incomes.Where(i => i.UserId == user);
@@ -40,9 +41,12 @@ namespace ExpenseTracker.Controllers
                 .Take(pageSize) 
                 .ToListAsync();
 
+            decimal incomeSum = pagedIncomes.Sum(i => i.IncomeAmount);
+
             ViewBag.TotalPages = totalPages;
             ViewBag.CurrentPage = pageNumber;
-           
+            ViewBag.IncomeSum = incomeSum;
+
             return View(pagedIncomes);
         }
         
@@ -54,6 +58,9 @@ namespace ExpenseTracker.Controllers
 
             var user = _userManager.GetUserId(User);
             AllIncomes = await dBContext.Incomes.Where(i => i.UserId == user).ToListAsync();
+
+            decimal incomeSum = AllIncomes.Sum(i => i.IncomeAmount);
+            ViewBag.IncomeSum = incomeSum;
 
             return View(AllIncomes);
         }
