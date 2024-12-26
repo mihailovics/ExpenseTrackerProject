@@ -1,21 +1,21 @@
-﻿@model ExpenseTracker.Models.Income
+﻿@model ExpenseTracker.Models.Outcome
 
 @{
-    ViewData["Title"] = "NewIncome";
+    ViewData["Title"] = "NewOutcome";
 }
 
-<h1 class="text-center">New Income</h1>
+<h1 class="text-center">New Outcome</h1>
 
-<h4 class="text-center">Income</h4>
+<h4 class="text-center">Outcome</h4>
 <hr />
 <div class="row">
     <div class="col-lg-12 d-flex justify-content-center text-center">
-        <form asp-action="NewIncome">
+        <form asp-action="NewOutcome">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="IncomeAmount" class="control-label"></label>
-                <input asp-for="IncomeAmount" class="form-control" />
-                <span asp-validation-for="IncomeAmount" class="text-danger"></span>
+                <label asp-for="OutcomeAmount" class="control-label"></label>
+                <input asp-for="OutcomeAmount" class="form-control" />
+                <span asp-validation-for="OutcomeAmount" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
@@ -28,7 +28,7 @@
                 <span asp-validation-for="Source" class="text-danger"></span>
             </div>
             <input asp-for="User.Name" class="form-control" type="hidden" value="shh" />
-            <div class="pt-3 form-group">
+            <div class="form-group pt-3">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
@@ -36,9 +36,8 @@
 </div>
 
 <div class="d-flex justify-content-center">
-    <a href="/Income/GetIncomes">Back to List</a>
+    <a href="/Outcome/GetOutcomes">Back to List</a>
 </div>
-
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

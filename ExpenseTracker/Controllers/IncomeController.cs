@@ -32,6 +32,7 @@ namespace ExpenseTracker.Controllers
             int pageSize = 5;
             
             var user = _userManager.GetUserId(User);
+           // var userU = await _userManager.GetUserAsync(User);
 
             IQueryable<Income> query = dBContext.Incomes.Where(i => i.UserId == user);
 
@@ -67,8 +68,8 @@ namespace ExpenseTracker.Controllers
         }
 
         [HttpGet("Income/NewIncome")]
-        [Authorize(Roles="user")]
-        public async Task<IActionResult> NewIncome()
+        [Authorize(Roles = "user")]
+        public IActionResult NewIncome()
         {
             return View();
         }
@@ -77,20 +78,22 @@ namespace ExpenseTracker.Controllers
         [Authorize(Roles = "user")]
         public async Task<IActionResult> NewIncome(Income incomeModel)
         {
-            var userId = _userManager.GetUserId(User);
-            var user = await dBContext.Users.FirstOrDefaultAsync(u=> u.Id == userId);
-            incomeModel.User = user;
-            if (ModelState.IsValid) 
-            {
+
+                var user = await _userManager.GetUserAsync(User);
                 
-                incomeModel.UserId = userId;
-                incomeModel.CreatedAt = DateTime.Now;
+                if (ModelState.IsValid)
+                {
+                    incomeModel.User.Name = user.Name;
+                    incomeModel.User = user;
+                    incomeModel.UserId = user.Id;
+                    incomeModel.CreatedAt = DateTime.Now;
 
-                dBContext.Incomes.Add(incomeModel);
-                await dBContext.SaveChangesAsync();
+                    dBContext.Incomes.Add(incomeModel);
+                    await dBContext.SaveChangesAsync();
 
-                return RedirectToAction("GetAllIncomes");
-            }
+                    return RedirectToAction("GetAllIncomes");
+                }
+            
             
             return View(incomeModel);
         }

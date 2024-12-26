@@ -40,7 +40,7 @@ namespace ExpenseTracker.Controllers
                 .Take(pageSize) // Take records for the current page
                 .ToListAsync();
 
-            decimal outcomeSum = AllOutcomes.Sum(i => i.OutcomeAmount);
+            decimal outcomeSum = pagedOutcomes.Sum(i => i.OutcomeAmount);
 
             ViewBag.OutcomeSum = outcomeSum;
             ViewBag.TotalPages = totalPages;
@@ -63,6 +63,38 @@ namespace ExpenseTracker.Controllers
             ViewBag.OutcomeSum = outcomeSum;
 
             return View(AllOutcomes);
+        }
+
+
+        [HttpGet("Outcome/NewOutcome")]
+        [Authorize(Roles = "user")]
+        public IActionResult NewOutcome()
+        {
+            return View();
+        }
+
+        [HttpPost("Outcome/NewOutcome")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> NewOutcome(Outcome outcomeModel)
+        {
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if (ModelState.IsValid)
+            {
+                outcomeModel.User.Name = user.Name;
+                outcomeModel.User = user;
+                outcomeModel.UserId = user.Id;
+                outcomeModel.CreatedAt = DateTime.Now;
+
+                dBContext.Outcomes.Add(outcomeModel);
+                await dBContext.SaveChangesAsync();
+
+                return RedirectToAction("GetAllOutcomes");
+            }
+
+
+            return View(outcomeModel);
         }
 
         [HttpGet("Outcome/Delete/{id}")]
