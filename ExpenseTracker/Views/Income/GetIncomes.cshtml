@@ -13,7 +13,18 @@
 <p class="d-flex justify-content-center">
     Sum of shown incomes: @ViewBag.IncomeSum
 </p>
+<p class="d-flex justify-content-center">
+    Balance: @ViewBag.Balance
+</p>
 
+<form id="paginationForm" method="get" action="@Url.Action("GetIncomes")">
+    <select name="pageSize" id="pageSizeDropdown" class="form-control" >
+        <option value="5">5 @(ViewBag.PageSize == 5 ? "selected" : "")</option>
+        <option value="10">10 @(ViewBag.PageSize == 10 ? "selected" : "")</option>
+        <option value="20">20 @(ViewBag.PageSize == 20 ? "selected" : "")</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
 @if (Model.Count() > 0 ){
 <table class="table">
     <thead>
@@ -58,24 +69,35 @@
     </tbody>
 </table>
 
-<nav class="d-flex justify-content-center">
-    <ul class="pagination">
-        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
-            <a class="page-link" href="/Income/GetIncomes?pageNumber=@(ViewBag.CurrentPage - 1)">Previous</a>
-        </li>
-
-        @for (int i = 1; i <= ViewBag.TotalPages; i++)
-        {
-            <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
-                <a class="page-link" href="/Income/GetIncomes?pageNumber=@i">@i</a>
+    <nav class="d-flex justify-content-center">
+        <ul class="pagination">
+            <!-- Previous Page Button -->
+            <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="/Income/GetIncomes?pageNumber=@(ViewBag.CurrentPage - 1)&pageSize=@ViewBag.PageSize">Previous</a>
             </li>
-        }
 
-        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
-            <a class="page-link" href="/Income/GetIncomes?pageNumber=@(ViewBag.CurrentPage + 1)">Next</a>
-        </li>
-    </ul>
-</nav>
+            <!-- Page Number Buttons -->
+            @for (int i = 1; i <= @ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                    <a class="page-link" href="/Income/GetIncomes?pageNumber=@i&pageSize=@ViewBag.PageSize">@i</a>
+                </li>
+            }
+
+            <!-- Next Page Button -->
+            <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                <a class="page-link" href="/Income/GetIncomes?pageNumber=@(ViewBag.CurrentPage + 1)&pageSize=@ViewBag.PageSize">Next</a>
+            </li>
+        </ul>
+    </nav>
+   @* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#pageSizeDropdown').change(function() {
+                $('#paginationForm').submit();
+            });
+        });
+    </script> *@
 }
 else{
         <p>No Incomes found.</p>

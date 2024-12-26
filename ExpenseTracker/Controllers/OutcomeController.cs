@@ -31,6 +31,7 @@ namespace ExpenseTracker.Controllers
             int pageSize = 5;
 
             var user = _userManager.GetUserId(User);
+            var userBalance = await _userManager.GetUserAsync(User);
 
             IQueryable<Outcome> query = dBContext.Outcomes.Where(i => i.UserId == user);
 
@@ -43,6 +44,7 @@ namespace ExpenseTracker.Controllers
 
             decimal outcomeSum = pagedOutcomes.Sum(i => i.OutcomeAmount);
 
+            ViewBag.Balance = userBalance.Balance;
             ViewBag.OutcomeSum = outcomeSum;
             ViewBag.TotalPages = totalPages;
             ViewBag.CurrentPage = pageNumber;

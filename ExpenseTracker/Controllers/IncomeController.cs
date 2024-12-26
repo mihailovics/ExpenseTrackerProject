@@ -29,10 +29,12 @@ namespace ExpenseTracker.Controllers
             List<Income> AllIncomes = new List<Income>();
             var pageNumberString = HttpContext.Request.Query["pageNumber"].FirstOrDefault();
             int pageNumber = string.IsNullOrEmpty(pageNumberString) ? 1 : int.Parse(pageNumberString);
-            int pageSize = 5;
-            
+
+            var pageSizeString = HttpContext.Request.Query["pageSize"].FirstOrDefault();
+            int pageSize = string.IsNullOrEmpty(pageSizeString) ? 5 : int.Parse(pageSizeString);
+
             var user = _userManager.GetUserId(User);
-         // var userU = await _userManager.GetUserAsync(User);
+            var userBalance = await _userManager.GetUserAsync(User);
 
             IQueryable<Income> query = dBContext.Incomes.Where(i => i.UserId == user);
 
@@ -48,6 +50,8 @@ namespace ExpenseTracker.Controllers
             ViewBag.TotalPages = totalPages;
             ViewBag.CurrentPage = pageNumber;
             ViewBag.IncomeSum = incomeSum;
+            ViewBag.PageSize = pageSize;
+            ViewBag.Balance = userBalance.Balance;
 
             return View(pagedIncomes);
         }
@@ -59,11 +63,14 @@ namespace ExpenseTracker.Controllers
             List<Income> AllIncomes = new List<Income>();
 
             var user = _userManager.GetUserId(User);
+            var userBalance = await _userManager.GetUserAsync(User);
+
             AllIncomes = await dBContext.Incomes.Where(i => i.UserId == user).ToListAsync();
 
             decimal incomeSum = AllIncomes.Sum(i => i.IncomeAmount);
-            ViewBag.IncomeSum = incomeSum;
 
+            ViewBag.IncomeSum = incomeSum;
+            ViewBag.Balance = userBalance.Balance;
             return View(AllIncomes);
         }
 

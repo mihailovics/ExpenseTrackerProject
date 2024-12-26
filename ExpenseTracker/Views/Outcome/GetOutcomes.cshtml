@@ -14,8 +14,10 @@
     Sum of shown outcomes: @ViewBag.OutcomeSum
 </p>
 <p class="d-flex justify-content-center">
-    Notice! : Consider reconfiguring allowed minus when deleting outcome because whole sum is getting put in Balance
+    Balance: @ViewBag.Balance
 </p>
+
+
 @if (Model.Count() > 0 ){
 <table class="table">
     <thead>
@@ -77,6 +79,9 @@
             </li>
         </ul>
     </nav>
+    <p class="d-flex justify-content-center">
+        Notice! : Consider reconfiguring allowed minus when deleting outcome because whole sum is getting put in Balance
+    </p>
 }
 else{
     <p>No Outcome result.</p>
