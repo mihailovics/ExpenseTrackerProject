@@ -3,6 +3,7 @@ using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseTracker.Controllers
@@ -77,24 +78,33 @@ namespace ExpenseTracker.Controllers
         [Authorize(Roles = "user")]
         public async Task<IActionResult> NewOutcome(Outcome outcomeModel)
         {
-
-            var user = await _userManager.GetUserAsync(User);
-
-            if (ModelState.IsValid)
+            try
             {
-                outcomeModel.User.Name = user.Name;
-                outcomeModel.User = user;
-                outcomeModel.UserId = user.Id;
-                outcomeModel.CreatedAt = DateTime.Now;
+                var user = await _userManager.GetUserAsync(User);
 
-                dBContext.Outcomes.Add(outcomeModel);
-                await dBContext.SaveChangesAsync();
+                if (ModelState.IsValid)
+                {
+                    outcomeModel.User.Name = user.Name;
+                    outcomeModel.User = user;
+                    outcomeModel.UserId = user.Id;
+                    outcomeModel.CreatedAt = DateTime.Now;
 
-                return RedirectToAction("GetAllOutcomes");
+                    dBContext.Outcomes.Add(outcomeModel);
+                    await dBContext.SaveChangesAsync();
+
+                    return RedirectToAction("GetAllOutcomes");
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                TempData["ErrorMessage"] = "Insufficient balance + allowed minus on account for creating that outcome";
+                return RedirectToAction("NewOutcome");
             }
 
-
             return View(outcomeModel);
+            
+          
+
         }
 
         [HttpGet("Outcome/Delete/{id}")]

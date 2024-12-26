@@ -1,4 +1,5 @@
 ﻿
+using System.Reflection.Emit;
 using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -40,11 +41,15 @@ namespace ExpenseTracker.Data
             builder.Entity<User>().
                 Property(u => u.Balance).HasDefaultValue(0);
             builder.Entity<User>().
-                Property(u => u.AllowedMinus).HasDefaultValue(0); 
+                Property(u => u.AllowedMinus).HasDefaultValue(0);
 
+            builder.Entity<Outcome>().ToTable("Outcomes", t => t.HasTrigger("trg_UpdateBalanceOnOutcome"));
+            builder.Entity<Outcome>().ToTable("Outcomes", t => t.HasTrigger("trg_UpdateBalanceOnOutcomeDelete"));
+            builder.Entity<Income>().ToTable("Incomes", t => t.HasTrigger("trg_UpdateBalanceAfterIncomeInsert"));
+            builder.Entity<Income>().ToTable("Incomes", t => t.HasTrigger("trg_UpdateBalanceAfterIncomeDelete"));
 
         }
-      
+
 
     }
 }

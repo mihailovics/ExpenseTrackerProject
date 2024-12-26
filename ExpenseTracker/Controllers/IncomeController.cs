@@ -32,7 +32,7 @@ namespace ExpenseTracker.Controllers
             int pageSize = 5;
             
             var user = _userManager.GetUserId(User);
-           // var userU = await _userManager.GetUserAsync(User);
+         // var userU = await _userManager.GetUserAsync(User);
 
             IQueryable<Income> query = dBContext.Incomes.Where(i => i.UserId == user);
 
@@ -78,11 +78,12 @@ namespace ExpenseTracker.Controllers
         [Authorize(Roles = "user")]
         public async Task<IActionResult> NewIncome(Income incomeModel)
         {
-
+                // System.InvalidOperation 
                 var user = await _userManager.GetUserAsync(User);
                 
                 if (ModelState.IsValid)
                 {
+                    
                     incomeModel.User.Name = user.Name;
                     incomeModel.User = user;
                     incomeModel.UserId = user.Id;
@@ -109,7 +110,7 @@ namespace ExpenseTracker.Controllers
 
         [HttpPost("Income/DeleteIncome")]
         [Authorize(Roles = "user")]
-        //Zasto ne radi sa FromBody
+        // Zasto ne radi sa FromBody
         public async Task<IActionResult> DeleteIncome([FromForm]int id) 
         {
             var income = await dBContext.Incomes.FindAsync(id);
