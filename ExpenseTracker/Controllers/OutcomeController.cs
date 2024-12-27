@@ -38,8 +38,8 @@ namespace ExpenseTracker.Controllers
             int totalIncomes = await query.CountAsync();
             int totalPages = (int)Math.Ceiling(totalIncomes / (double)pageSize);
             List<Outcome> pagedOutcomes = await query
-                .Skip((pageNumber - 1) * pageSize) // Skip records from previous pages
-                .Take(pageSize) // Take records for the current page
+                .Skip((pageNumber - 1) * pageSize) 
+                .Take(pageSize) 
                 .ToListAsync();
 
             decimal outcomeSum = pagedOutcomes.Sum(i => i.OutcomeAmount);

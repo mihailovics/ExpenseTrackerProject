@@ -71,12 +71,12 @@
 
     <nav class="d-flex justify-content-center">
         <ul class="pagination">
-            <!-- Previous Page Button -->
+           
             <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
                 <a class="page-link" href="/Income/GetIncomes?pageNumber=@(ViewBag.CurrentPage - 1)&pageSize=@ViewBag.PageSize">Previous</a>
             </li>
 
-            <!-- Page Number Buttons -->
+            
             @for (int i = 1; i <= @ViewBag.TotalPages; i++)
             {
                 <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
@@ -84,20 +84,20 @@
                 </li>
             }
 
-            <!-- Next Page Button -->
+            
             <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
                 <a class="page-link" href="/Income/GetIncomes?pageNumber=@(ViewBag.CurrentPage + 1)&pageSize=@ViewBag.PageSize">Next</a>
             </li>
         </ul>
     </nav>
-   @* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
+   @* <script src="https://code.jquery.com/jquery-3.6.0.min.js"> 
+    $(document).ready(function() {
             $('#pageSizeDropdown').change(function() {
                 $('#paginationForm').submit();
             });
-        });
-    </script> *@
+        });    
+   </script>
+     *@
 }
 else{
         <p>No Incomes found.</p>
