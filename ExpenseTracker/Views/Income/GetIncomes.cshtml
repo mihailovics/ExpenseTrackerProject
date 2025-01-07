@@ -17,14 +17,15 @@
     Balance: @ViewBag.Balance
 </p>
 
-<form id="paginationForm" method="get" action="@Url.Action("GetIncomes")">
-    <select name="pageSize" id="pageSizeDropdown" class="form-control" >
-        <option value="5">5 @(ViewBag.PageSize == 5 ? "selected" : "")</option>
-        <option value="10">10 @(ViewBag.PageSize == 10 ? "selected" : "")</option>
-        <option value="20">20 @(ViewBag.PageSize == 20 ? "selected" : "")</option>
+<form id="paginationForm" method="get" action="/Income/GetIncomes">
+    <select name="pageSize" id="pageSizeDropdown" class="form-control" onchange="this.form.submit()">
+        <option value="5" selected="selected">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
     </select>
-    <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+    @*<button type="submit" class="btn btn-primary">Submit</button>*@
+
 @if (Model.Count() > 0 ){
 <table class="table">
     <thead>
@@ -96,8 +97,8 @@
                 $('#paginationForm').submit();
             });
         });    
-   </script>
-     *@
+   </script>*@
+     
 }
 else{
         <p>No Incomes found.</p>

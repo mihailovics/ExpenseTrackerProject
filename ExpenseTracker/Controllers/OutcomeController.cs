@@ -1,5 +1,6 @@
 ﻿using ExpenseTracker.Data;
 using ExpenseTracker.Models;
+using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,60 +13,46 @@ namespace ExpenseTracker.Controllers
     {
         ApplicationDBContext dBContext;
         private readonly ILogger<HomeController> _logger;
-        private readonly UserManager<User> _userManager;
+        private readonly IOutcomeService _outcomeService;
 
-        public OutcomeController(ILogger<HomeController> logger, UserManager<User> UserManager, ApplicationDBContext DbContext)
+        public OutcomeController(ILogger<HomeController> logger, ApplicationDBContext DbContext, IOutcomeService outcomeService)
         {
-            _userManager = UserManager;
+            
             _logger = logger;
             dBContext = DbContext;
+            _outcomeService = outcomeService;
         }
 
         [HttpGet("Outcome/GetOutcomes")]
         [Authorize(Roles = "user")]
         public async Task<IActionResult> GetOutcomes()
         {
-            List<Outcome> AllOutcomes = new List<Outcome>();
-            var pageNumberString = HttpContext.Request.Query["pageNumber"].FirstOrDefault();
-            int pageNumber = string.IsNullOrEmpty(pageNumberString) ? 1 : int.Parse(pageNumberString);
-            int pageSize = 5;
+            try
+            {
+                var pagedOutcomes = await _outcomeService.GetPaginatedOutcomes(HttpContext);
 
-            var user = _userManager.GetUserId(User);
-            var userBalance = await _userManager.GetUserAsync(User);
+                ViewBag.Balance = pagedOutcomes.Balance;
+                ViewBag.OutcomeSum = pagedOutcomes.OutcomeSum;
+                ViewBag.TotalPages = pagedOutcomes.TotalPages;
+                ViewBag.CurrentPage = pagedOutcomes.CurrentPage;
 
-            IQueryable<Outcome> query = dBContext.Outcomes.Where(i => i.UserId == user);
-
-            int totalIncomes = await query.CountAsync();
-            int totalPages = (int)Math.Ceiling(totalIncomes / (double)pageSize);
-            List<Outcome> pagedOutcomes = await query
-                .Skip((pageNumber - 1) * pageSize) 
-                .Take(pageSize) 
-                .ToListAsync();
-
-            decimal outcomeSum = pagedOutcomes.Sum(i => i.OutcomeAmount);
-
-            ViewBag.Balance = userBalance.Balance;
-            ViewBag.OutcomeSum = outcomeSum;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.CurrentPage = pageNumber;
-
-            return View(pagedOutcomes);
+                return View(pagedOutcomes.Outcomes);
+            }
+            catch(Exception ex)
+            {
+                return View(ex);
+            }
         }
 
         [HttpGet("Outcome/GetAllOutcomes")]
         [Authorize(Roles = "user")]
         public async Task<IActionResult> GetAllOutcomes()
         {
-            List<Outcome> AllOutcomes = new List<Outcome>();
+            var AllOutcomes = await _outcomeService.GetAllOutcomes(HttpContext);
 
-            var user = _userManager.GetUserId(User);
-            AllOutcomes = await dBContext.Outcomes.Where(i => i.UserId == user).ToListAsync();
+            ViewBag.OutcomeSum = AllOutcomes.OutcomeSum;
 
-            decimal outcomeSum = AllOutcomes.Sum(i => i.OutcomeAmount);
-
-            ViewBag.OutcomeSum = outcomeSum;
-
-            return View(AllOutcomes);
+            return View(AllOutcomes.Outcomes);
         }
 
 
@@ -82,17 +69,9 @@ namespace ExpenseTracker.Controllers
         {
             try
             {
-                var user = await _userManager.GetUserAsync(User);
-
                 if (ModelState.IsValid)
                 {
-                    outcomeModel.User.Name = user.Name;
-                    outcomeModel.User = user;
-                    outcomeModel.UserId = user.Id;
-                    outcomeModel.CreatedAt = DateTime.Now;
-
-                    dBContext.Outcomes.Add(outcomeModel);
-                    await dBContext.SaveChangesAsync();
+                    var newOutcome = await _outcomeService.NewOutcome(HttpContext, outcomeModel);
 
                     return RedirectToAction("GetAllOutcomes");
                 }
@@ -104,8 +83,6 @@ namespace ExpenseTracker.Controllers
             }
 
             return View(outcomeModel);
-            
-          
 
         }
 
@@ -123,11 +100,10 @@ namespace ExpenseTracker.Controllers
         // Zasto ne radi sa FromBody
         public async Task<IActionResult> DeleteOutcome([FromForm] int id)
         {
-            var outcome = await dBContext.Outcomes.FindAsync(id);
+            
             if (ModelState.IsValid)
             {
-                dBContext.Outcomes.Remove(outcome);
-                await dBContext.SaveChangesAsync();
+                await _outcomeService.DeleteOutcome(id);
                 return RedirectToAction("GetOutcomes");
             }
             else

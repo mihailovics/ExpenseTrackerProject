@@ -2,10 +2,13 @@
 using ExpenseTracker.Data;
 using ExpenseTracker.DTOs;
 using ExpenseTracker.Models;
+using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGeneration;
+using NuGet.Packaging.Signing;
 
 namespace ExpenseTracker.Controllers
 {
@@ -13,65 +16,54 @@ namespace ExpenseTracker.Controllers
     {
         ApplicationDBContext dBContext;
         private readonly ILogger<HomeController> _logger;
-        private readonly UserManager<User> _userManager;
-        
-        public IncomeController(ILogger<HomeController> logger, UserManager<User> UserManager,ApplicationDBContext DbContext)
+        private readonly IIncomeService _incomeService;
+
+        public IncomeController(ILogger<HomeController> logger, ApplicationDBContext DbContext, IIncomeService incomeService)
         {
-            _userManager = UserManager;
+            
             _logger = logger;
             dBContext = DbContext;
+            _incomeService = incomeService;
         }
 
         [HttpGet("Income/GetIncomes")]
         [Authorize(Roles = "user")]
         public async Task<IActionResult> GetIncomes() 
         {
-            List<Income> AllIncomes = new List<Income>();
-            var pageNumberString = HttpContext.Request.Query["pageNumber"].FirstOrDefault();
-            int pageNumber = string.IsNullOrEmpty(pageNumberString) ? 1 : int.Parse(pageNumberString);
+            try
+            {
+                var pagedIncomes = await _incomeService.GetPaginatedIncomes(HttpContext);
 
-            var pageSizeString = HttpContext.Request.Query["pageSize"].FirstOrDefault();
-            int pageSize = string.IsNullOrEmpty(pageSizeString) ? 5 : int.Parse(pageSizeString);
+                ViewBag.TotalPages = pagedIncomes.TotalPages;
+                ViewBag.CurrentPage = pagedIncomes.CurrentPage;
+                ViewBag.IncomeSum = pagedIncomes.IncomeSum;
+                ViewBag.PageSize = pagedIncomes.PageSize;
+                ViewBag.Balance = pagedIncomes.Balance;
 
-            var user = _userManager.GetUserId(User);
-            var userBalance = await _userManager.GetUserAsync(User);
-
-            IQueryable<Income> query = dBContext.Incomes.Where(i => i.UserId == user);
-
-            int totalIncomes = await query.CountAsync();
-            int totalPages = (int)Math.Ceiling(totalIncomes / (double)pageSize);
-            List<Income> pagedIncomes = await query
-                .Skip((pageNumber - 1) * pageSize) 
-                .Take(pageSize) 
-                .ToListAsync();
-
-            decimal incomeSum = pagedIncomes.Sum(i => i.IncomeAmount);
-
-            ViewBag.TotalPages = totalPages;
-            ViewBag.CurrentPage = pageNumber;
-            ViewBag.IncomeSum = incomeSum;
-            ViewBag.PageSize = pageSize;
-            ViewBag.Balance = userBalance.Balance;
-
-            return View(pagedIncomes);
+                return View(pagedIncomes.Incomes);
+            }
+            catch (Exception ex)
+            {
+                return View(ex);
+            }
         }
         
         [HttpGet("Income/GetAllIncomes")]
         [Authorize(Roles = "user")]
         public async Task<IActionResult> GetAllIncomes()
         {
-            List<Income> AllIncomes = new List<Income>();
+            try
+            {
+                var AllIncomes = await _incomeService.GetAllIncomes(HttpContext);
 
-            var user = _userManager.GetUserId(User);
-            var userBalance = await _userManager.GetUserAsync(User);
-
-            AllIncomes = await dBContext.Incomes.Where(i => i.UserId == user).ToListAsync();
-
-            decimal incomeSum = AllIncomes.Sum(i => i.IncomeAmount);
-
-            ViewBag.IncomeSum = incomeSum;
-            ViewBag.Balance = userBalance.Balance;
-            return View(AllIncomes);
+                ViewBag.IncomeSum = AllIncomes.IncomeSum;
+                ViewBag.Balance = AllIncomes.Balance;
+                return View(AllIncomes.Incomes);
+            }
+            catch (Exception ex) 
+            {
+                return View(ex);
+            }
         }
 
         [HttpGet("Income/NewIncome")]
@@ -85,23 +77,14 @@ namespace ExpenseTracker.Controllers
         [Authorize(Roles = "user")]
         public async Task<IActionResult> NewIncome(Income incomeModel)
         {
-                // System.InvalidOperation 
-                var user = await _userManager.GetUserAsync(User);
+            // System.InvalidOperation 
                 
-                if (ModelState.IsValid)
-                {
-                    
-                    incomeModel.User.Name = user.Name;
-                    incomeModel.User = user;
-                    incomeModel.UserId = user.Id;
-                    incomeModel.CreatedAt = DateTime.Now;
+            if (ModelState.IsValid)
+            {
+                var newIncome = await _incomeService.NewIncome(HttpContext, incomeModel);
 
-                    dBContext.Incomes.Add(incomeModel);
-                    await dBContext.SaveChangesAsync();
-
-                    return RedirectToAction("GetAllIncomes");
-                }
-            
+                return RedirectToAction("GetAllIncomes");
+            }
             
             return View(incomeModel);
         }
@@ -120,11 +103,10 @@ namespace ExpenseTracker.Controllers
         // Zasto ne radi sa FromBody
         public async Task<IActionResult> DeleteIncome([FromForm]int id) 
         {
-            var income = await dBContext.Incomes.FindAsync(id);
+            
             if (ModelState.IsValid)
             {
-                dBContext.Incomes.Remove(income);
-                await dBContext.SaveChangesAsync();
+                await _incomeService.DeleteIncome(id);
                 return RedirectToAction("GetAllIncomes");
             }
             else
