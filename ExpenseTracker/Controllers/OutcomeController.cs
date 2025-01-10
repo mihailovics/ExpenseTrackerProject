@@ -86,6 +86,40 @@ namespace ExpenseTracker.Controllers
 
         }
 
+        [HttpGet("Outcome/Edit/{id}")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            
+            var outcome = await dBContext.Outcomes.FindAsync(id);
+            return View(outcome);
+        }
+
+        [HttpPost("Outcome/EditOutcome")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> EditOutcome([FromForm] Outcome outcomeModel, [FromForm] int id)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var newOutcome = await _outcomeService.EditOutcome(HttpContext, outcomeModel, id);
+
+                    if (newOutcome == true)
+                    {
+                        return RedirectToAction("GetAllOutcomes");
+                    }
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                TempData["ErrorMessage"] = "Insufficient balance + allowed minus on account when editing this outcome";
+                return RedirectToAction("Edit",new { id = id });
+            }
+
+            return RedirectToAction("GetAllOutcomes");
+        }
+
         [HttpGet("Outcome/Delete/{id}")]
         [Authorize(Roles = "user")]
         public async Task<IActionResult> Delete(int id)

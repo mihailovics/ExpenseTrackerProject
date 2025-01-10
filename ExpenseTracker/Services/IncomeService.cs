@@ -4,6 +4,7 @@ using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace ExpenseTracker.Services
 {
@@ -86,7 +87,7 @@ namespace ExpenseTracker.Services
 
             return incomeModel;
         }
-
+        
         public async Task DeleteIncome(int id)
         {
             var income = await dBContext.Incomes.FindAsync(id);
@@ -95,6 +96,31 @@ namespace ExpenseTracker.Services
                 dBContext.Incomes.Remove(income);
                 await dBContext.SaveChangesAsync();
             }
+        }
+
+        public async Task<bool> EditIncome(HttpContext httpContext, Income updatedIncome, int id)
+        {
+            var user = await _userManager.GetUserAsync(httpContext.User);
+
+            var income = await dBContext.Incomes.FirstOrDefaultAsync(i => i.Id == id && i.UserId == user.Id);
+
+            if(user == null)
+            {
+                return false;
+            }
+
+            income.IncomeAmount = updatedIncome.IncomeAmount;
+            income.Description = updatedIncome.Description;
+            income.Source = updatedIncome.Source;
+            income.UserId = user.Id;
+            income.User.Name = user.Name;
+
+            //income.CreatedAt = DateTime.Now;
+
+            await dBContext.SaveChangesAsync();
+
+            return true;
+
         }
     }
 }

@@ -94,5 +94,27 @@ namespace ExpenseTracker.Services
 
             return outcomeModel;
         }
+
+        public async Task<bool> EditOutcome(HttpContext httpContext, Outcome outcomeModel, int id)
+        {
+            var user = await _userManager.GetUserAsync(httpContext.User);
+
+            var outcome = await dBContext.Outcomes.FirstOrDefaultAsync(i => i.Id == id && i.UserId == user.Id);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            outcome.OutcomeAmount = outcomeModel.OutcomeAmount;
+            outcome.Description = outcomeModel.Description;
+            outcome.Source = outcomeModel.Source;
+            outcome.UserId = user.Id;
+            outcome.User.Name = user.Name;
+
+            await dBContext.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

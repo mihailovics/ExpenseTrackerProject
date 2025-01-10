@@ -44,6 +44,7 @@
             </th>
             <th>
                 @Html.DisplayName("Delete")
+                @Html.DisplayName("Edit")
             </th>
         </tr>
     </thead>
@@ -64,6 +65,7 @@
             </td>
             <td>|
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
             </td>
         </tr>
 }

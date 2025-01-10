@@ -89,6 +89,31 @@ namespace ExpenseTracker.Controllers
             return View(incomeModel);
         }
 
+        [HttpGet("Income/Edit/{id}")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var income = await dBContext.Incomes.FindAsync(id);
+            return View(income);
+        }
+
+        [HttpPost("Income/EditIncome")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> EditIncome([FromForm] Income incomeModel, [FromForm] int id)
+        {
+            // System.InvalidOperation 
+            if (ModelState.IsValid)
+            {
+                var newIncome = await _incomeService.EditIncome(HttpContext, incomeModel, id);
+
+                if (newIncome == true)
+                {
+                    return RedirectToAction("GetAllIncomes");
+                }
+            }
+            return RedirectToAction("Edit/" + id);
+        }
+
         [HttpGet("Income/Delete/{id}")]
         [Authorize(Roles = "user")]
         public async Task<IActionResult> Delete(int id)
