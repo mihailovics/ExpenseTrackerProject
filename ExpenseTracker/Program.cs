@@ -1,4 +1,5 @@
 using ExpenseTracker.Data;
+using ExpenseTracker.Helpers;
 using ExpenseTracker.Models;
 using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +15,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IIncomeService, IncomeService>();
 builder.Services.AddScoped<IOutcomeService, OutcomeService>();
+builder.Services.AddScoped<ICommonMethods, CommonMethods>();
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(connectionString));

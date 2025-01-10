@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using ExpenseTracker.Data;
 using ExpenseTracker.DTOs;
+using ExpenseTracker.Helpers;
 using ExpenseTracker.Models;
 using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGeneration;
 using NuGet.Packaging.Signing;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ExpenseTracker.Controllers
 {
@@ -17,13 +19,15 @@ namespace ExpenseTracker.Controllers
         ApplicationDBContext dBContext;
         private readonly ILogger<HomeController> _logger;
         private readonly IIncomeService _incomeService;
+        private readonly ICommonMethods commonMethods;
 
-        public IncomeController(ILogger<HomeController> logger, ApplicationDBContext DbContext, IIncomeService incomeService)
+        public IncomeController(ILogger<HomeController> logger, ApplicationDBContext DbContext, IIncomeService incomeService, ICommonMethods CommonMethods)
         {
             
             _logger = logger;
             dBContext = DbContext;
             _incomeService = incomeService;
+            commonMethods = CommonMethods;
         }
 
         [HttpGet("Income/GetIncomes")]
@@ -32,6 +36,10 @@ namespace ExpenseTracker.Controllers
         {
             try
             {
+                var sources = await commonMethods.GetDistinctSourcesAsync(HttpContext);
+                var years = await commonMethods.GetDistinctYearsAsync(HttpContext);
+                var months = await commonMethods.GetDistinctMonthsAsync(HttpContext);
+
                 var pagedIncomes = await _incomeService.GetPaginatedIncomes(HttpContext);
 
                 ViewBag.TotalPages = pagedIncomes.TotalPages;
@@ -39,6 +47,10 @@ namespace ExpenseTracker.Controllers
                 ViewBag.IncomeSum = pagedIncomes.IncomeSum;
                 ViewBag.PageSize = pagedIncomes.PageSize;
                 ViewBag.Balance = pagedIncomes.Balance;
+                //Filtering
+                ViewBag.Sources = sources;
+                ViewBag.Years = years;
+                ViewBag.Months = months;
 
                 return View(pagedIncomes.Incomes);
             }

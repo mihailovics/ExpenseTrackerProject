@@ -21,17 +21,38 @@ namespace ExpenseTracker.Services
 
         public async Task<IncomePaginationDTO> GetPaginatedIncomes(HttpContext httpContext)
         {
-            List<Income> AllIncomes = new List<Income>();
+            //List<Income> AllIncomes = new List<Income>();
             var pageNumberString = httpContext.Request.Query["pageNumber"].FirstOrDefault();
             int pageNumber = string.IsNullOrEmpty(pageNumberString) ? 1 : int.Parse(pageNumberString);
 
             var pageSizeString = httpContext.Request.Query["pageSize"].FirstOrDefault();
             int pageSize = string.IsNullOrEmpty(pageSizeString) ? 5 : int.Parse(pageSizeString);
 
+            var years = httpContext.Request.Query["year"].FirstOrDefault();
+            var month = httpContext.Request.Query["month"].FirstOrDefault();
+            var source = httpContext.Request.Query["source"].FirstOrDefault();
+
             var userID = _userManager.GetUserId(httpContext.User);
             var user = await _userManager.GetUserAsync(httpContext.User);
 
             IQueryable<Income> query = dBContext.Incomes.Where(i => i.UserId == userID);
+
+            if (!string.IsNullOrEmpty(years))
+            {
+                var yearInt = int.Parse(years); 
+                query = query.Where(i => i.CreatedAt.Year == yearInt);
+            }
+
+            if (!string.IsNullOrEmpty(month))
+            {
+                var monthInt = int.Parse(month); 
+                query = query.Where(i => i.CreatedAt.Month == monthInt);
+            }
+
+            if (!string.IsNullOrEmpty(source))
+            {
+                query = query.Where(i => i.Source == source);
+            }
 
             int totalIncomes = await query.CountAsync();
             int totalPages = (int)Math.Ceiling(totalIncomes / (double)pageSize);
@@ -50,7 +71,6 @@ namespace ExpenseTracker.Services
                 PageSize = pageSize,
                 Balance = user.Balance,
                 IncomeSum = incomeSum
-                
             };
         }
 
