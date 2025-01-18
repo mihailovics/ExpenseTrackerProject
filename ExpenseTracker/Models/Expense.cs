@@ -2,18 +2,18 @@
 
 namespace ExpenseTracker.Models
 {
-    public class Outcome
+    public class Expense
     {
         [Key]
         public int Id { get; set; }
         [Required]
-        public decimal OutcomeAmount { get; set; }
+        public decimal ExpenseAmount { get; set; }
         public string? Description { get; set; }
         [Required]
         public string Source { get; set; } = "";
         [Required]
         public DateTime CreatedAt { get; set; }
-        public string UserId { get; set; } = "";
-        public User User { get; set; } = new User();
+        public int AccountId { get; set; } 
+        public Account? Account { get; set; } = new Account();
     }
 }

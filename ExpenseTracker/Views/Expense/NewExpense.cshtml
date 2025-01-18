@@ -1,12 +1,12 @@
-﻿@model ExpenseTracker.Models.Outcome
+﻿@model ExpenseTracker.Models.Expense
 
 @{
-    ViewData["Title"] = "NewOutcome";
+    ViewData["Title"] = "NewExpense";
 }
 
-<h1 class="text-center">New Outcome</h1>
+<h1 class="text-center">New Expense</h1>
 
-<h4 class="text-center">Outcome</h4>
+<h4 class="text-center">Expense</h4>
 <hr />
 @if (TempData["ErrorMessage"] != null)
 {
@@ -16,12 +16,12 @@
 }
 <div class="row">
     <div class="col-lg-12 d-flex justify-content-center text-center">
-        <form asp-action="NewOutcome">
+        <form asp-action="NewExpense">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="OutcomeAmount" class="control-label"></label>
-                <input asp-for="OutcomeAmount" class="form-control" />
-                <span asp-validation-for="OutcomeAmount" class="text-danger"></span>
+                <label asp-for="ExpenseAmount" class="control-label"></label>
+                <input asp-for="ExpenseAmount" class="form-control" />
+                <span asp-validation-for="ExpenseAmount" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
@@ -33,7 +33,7 @@
                 <input asp-for="Source" class="form-control" />
                 <span asp-validation-for="Source" class="text-danger"></span>
             </div>
-            <input asp-for="User.Name" class="form-control" type="hidden" value="shh" />
+            
             <div class="form-group pt-3">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -42,7 +42,7 @@
 </div>
 
 <div class="d-flex justify-content-center">
-    <a href="/Outcome/GetOutcomes">Back to List</a>
+    <a href="/Expense/GetExpenses">Back to List</a>
 </div>
 
 @section Scripts {

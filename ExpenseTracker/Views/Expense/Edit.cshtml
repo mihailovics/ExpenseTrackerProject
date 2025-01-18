@@ -1,4 +1,4 @@
-﻿@model ExpenseTracker.Models.Outcome
+﻿@model ExpenseTracker.Models.Expense
 
 @{
     ViewData["Title"] = "Edit";
@@ -6,7 +6,7 @@
 
 <h1>Edit</h1>
 
-<h4>Outcome</h4>
+<h4>Expense</h4>
 <hr />
 @if (TempData["ErrorMessage"] != null)
 {
@@ -17,13 +17,13 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="EditOutcome" asp-controller="Outcome" method="post">
+        <form asp-action="EditExpense" asp-controller="Expense" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="OutcomeAmount" class="control-label"></label>
-                <input asp-for="OutcomeAmount" class="form-control" />
-                <span asp-validation-for="OutcomeAmount" class="text-danger"></span>
+                <label asp-for="ExpenseAmount" class="control-label"></label>
+                <input asp-for="ExpenseAmount" class="form-control" />
+                <span asp-validation-for="ExpenseAmount" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
@@ -35,7 +35,7 @@
                 <input asp-for="Source" class="form-control" />
                 <span asp-validation-for="Source" class="text-danger"></span>
             </div>
-            <input asp-for="User.Name" class="form-control" type="hidden" value="ssh" />
+            
             <div class="form-group">
                 <input type="hidden" asp-for="Id" />
                 <input type="submit" value="Save" class="btn btn-primary" />

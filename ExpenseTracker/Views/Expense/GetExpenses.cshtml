@@ -1,17 +1,17 @@
-﻿@model IEnumerable<ExpenseTracker.Models.Outcome>
+﻿@model IEnumerable<ExpenseTracker.Models.Expense>
 
 @{
-    ViewData["Title"] = "Get Outcomes";
+    ViewData["Title"] = "Get Expenses";
 }
 
-<h1 class="text-center">Get All Outcomes</h1>
+<h1 class="text-center">Get All Expenses</h1>
 
 <p>
-    <a asp-action="NewOutcome">Add new Outcome</a>
-    <a class="float-end" href="/Outcome/GetAllOutcomes">View all outcomes</a>
+    <a asp-action="NewExpense">Add new Expense</a>
+    <a class="float-end" href="/Expense/GetAllExpenses">View all Expenses</a>
 </p>
 <p class="d-flex justify-content-center">
-    Sum of shown outcomes: @ViewBag.OutcomeSum
+    Sum of shown Expenses: @ViewBag.ExpenseSum
 </p>
 <p class="d-flex justify-content-center">
     Balance: @ViewBag.Balance
@@ -23,7 +23,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.OutcomeAmount)
+                @Html.DisplayNameFor(model => model.ExpenseAmount)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Description)
@@ -44,7 +44,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.OutcomeAmount)
+                @Html.DisplayFor(modelItem => item.ExpenseAmount)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
@@ -82,9 +82,9 @@
         </ul>
     </nav>
     <p class="d-flex justify-content-center">
-        Notice! : Consider reconfiguring allowed minus when deleting outcome because whole sum is getting put in Balance
+        Notice! : Consider reconfiguring allowed minus when deleting Expense because whole sum is getting put in Balance
     </p>
 }
 else{
-    <p>No Outcome result.</p>
+    <p>No Expense result.</p>
 }

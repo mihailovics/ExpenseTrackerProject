@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using ExpenseTracker.Data;
+using ExpenseTracker.Helpers;
 using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,15 +20,17 @@ namespace ExpenseTracker.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         //dodajemo dbContext da bi mogli da update account
-        
+        private readonly ICommonMethods _commonMethods;
 
         public IndexModel(
             UserManager<User> userManager,
-            SignInManager<User> signInManager
+            SignInManager<User> signInManager,
+            ICommonMethods commonMethods
             )
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _commonMethods = commonMethods;
             
         }
 
@@ -77,10 +80,11 @@ namespace ExpenseTracker.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(User user)
         {
+            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            var balance = user.Balance;
-            var allowedMinus = user.AllowedMinus;
+            var balance = account.Balance;
+            var allowedMinus = account.AllowedMinus;
 
             Username = userName;
 
@@ -107,6 +111,7 @@ namespace ExpenseTracker.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);
+            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -121,8 +126,8 @@ namespace ExpenseTracker.Areas.Identity.Pages.Account.Manage
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             
             var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-            user.Balance = Input.Balance;
-            user.AllowedMinus = Input.AllowedMinus;
+            account.Balance = Input.Balance;
+            account.AllowedMinus = Input.AllowedMinus;
             user.PhoneNumber = Input.PhoneNumber;
 
             await _userManager.UpdateAsync(user);

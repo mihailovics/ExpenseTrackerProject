@@ -1,4 +1,4 @@
-﻿@model ExpenseTracker.Models.Outcome
+﻿@model ExpenseTracker.Models.Expense
 
 @{
     ViewData["Title"] = "Delete";
@@ -8,14 +8,14 @@
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
-    <h4>Outcome</h4>
+    <h4>Expense</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OutcomeAmount)
+            @Html.DisplayNameFor(model => model.ExpenseAmount)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OutcomeAmount)
+            @Html.DisplayFor(model => model.ExpenseAmount)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Description)
@@ -36,16 +36,16 @@
             @Html.DisplayFor(model => model.CreatedAt)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
+            @Html.DisplayNameFor(model => model.Account)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Id)
+            @Html.DisplayFor(model => model.Account.Id)
         </dd>
     </dl>
     
-    <form asp-action="DeleteOutcome">
+    <form asp-action="DeleteExpense">
         <input type="hidden" asp-for="Id" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a href="/Outcome/GetOutcomes">Back to List</a>
+        <a href="/Expense/GetExpenses">Back to List</a>
     </form>
 </div>

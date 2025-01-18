@@ -14,7 +14,7 @@ var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IIncomeService, IncomeService>();
-builder.Services.AddScoped<IOutcomeService, OutcomeService>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<ICommonMethods, CommonMethods>();
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>

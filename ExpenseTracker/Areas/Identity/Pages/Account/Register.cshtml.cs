@@ -126,10 +126,9 @@ namespace ExpenseTracker.Areas.Identity.Pages.Account
 
                     var user = new User()
                     {
-                        Name = Input.Name,
+                        
                         Email = Input.Email,
                         PhoneNumber = Input.Phone,
-                        CreatedAt = DateTime.Now,
                         UserName = Input.Email,
                     };
 

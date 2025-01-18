@@ -1,15 +1,15 @@
-﻿@model IEnumerable<ExpenseTracker.Models.Outcome>
+﻿@model IEnumerable<ExpenseTracker.Models.Expense>
 
 @{
-    ViewData["Title"] = "Get All Outcomes";
+    ViewData["Title"] = "Get All Expenses";
 }
 
-<h1 class="text-center">Get All Outcomes</h1>
+<h1 class="text-center">Get All Expenses</h1>
 
 <div>
-    <a href="/Outcome/GetOutcomes" class="btn btn-secondary">Back</a>
+    <a href="/Expense/GetExpenses" class="btn btn-secondary">Back</a>
     <p class="float-end">
-        Sum of all outcomes: @ViewBag.OutcomeSum
+        Sum of all Expenses: @ViewBag.ExpenseSum
     </p>
 </div>
 
@@ -17,7 +17,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.OutcomeAmount)
+                @Html.DisplayNameFor(model => model.ExpenseAmount)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Description)
@@ -37,7 +37,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.OutcomeAmount)
+                @Html.DisplayFor(modelItem => item.ExpenseAmount)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)

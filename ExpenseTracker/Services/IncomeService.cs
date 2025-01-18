@@ -1,5 +1,6 @@
 ﻿using ExpenseTracker.Data;
 using ExpenseTracker.DTOs;
+using ExpenseTracker.Helpers;
 using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,11 +13,13 @@ namespace ExpenseTracker.Services
     {
         ApplicationDBContext dBContext;
         private readonly UserManager<User> _userManager;
+        private readonly ICommonMethods _commonMethods;
 
-        public IncomeService(ApplicationDBContext DbContext, UserManager<User> userManager) 
+        public IncomeService(ApplicationDBContext DbContext, UserManager<User> userManager, ICommonMethods commonMethods) 
         {
             dBContext = DbContext;
             _userManager = userManager;
+            _commonMethods = commonMethods;
         }
 
         public async Task<IncomePaginationDTO> GetPaginatedIncomes(HttpContext httpContext)
@@ -32,10 +35,11 @@ namespace ExpenseTracker.Services
             var month = httpContext.Request.Query["month"].FirstOrDefault();
             var source = httpContext.Request.Query["source"].FirstOrDefault();
 
-            var userID = _userManager.GetUserId(httpContext.User);
+            
             var user = await _userManager.GetUserAsync(httpContext.User);
+            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
 
-            IQueryable<Income> query = dBContext.Incomes.Where(i => i.UserId == userID);
+            IQueryable<Income> query = dBContext.Incomes.Where(i => i.AccountId == account.Id);
 
             if (!string.IsNullOrEmpty(years))
             {
@@ -69,7 +73,7 @@ namespace ExpenseTracker.Services
                 CurrentPage = pageNumber,
                 Incomes = pagedIncomes,
                 PageSize = pageSize,
-                Balance = user.Balance,
+                Balance = account.Balance,
                 IncomeSum = incomeSum
             };
         }
@@ -78,17 +82,17 @@ namespace ExpenseTracker.Services
         {
             List<Income> AllIncomes = new List<Income>();
 
-            var userID = _userManager.GetUserId(httpContext.User);
             var user = await _userManager.GetUserAsync(httpContext.User);
+            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
 
-            AllIncomes = await dBContext.Incomes.Where(i => i.UserId == userID).ToListAsync();
+            AllIncomes = await dBContext.Incomes.Where(i => i.AccountId == account.Id).ToListAsync();
 
             decimal incomeSum = AllIncomes.Sum(i => i.IncomeAmount);
 
             return new IncomePaginationDTO
             {
                 IncomeSum = incomeSum,
-                Balance = user.Balance,
+                Balance = account.Balance,
                 Incomes = AllIncomes
             };
         }
@@ -96,10 +100,10 @@ namespace ExpenseTracker.Services
         public async Task<Income> NewIncome(HttpContext httpContext, Income incomeModel)
         {
             var user = await _userManager.GetUserAsync(httpContext.User);
+            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
 
-            incomeModel.User.Name = user.Name;
-            incomeModel.User = user;
-            incomeModel.UserId = user.Id;
+            incomeModel.Account = account;
+            incomeModel.AccountId = account.Id; 
             incomeModel.CreatedAt = DateTime.Now;
 
             dBContext.Incomes.Add(incomeModel);
@@ -121,8 +125,9 @@ namespace ExpenseTracker.Services
         public async Task<bool> EditIncome(HttpContext httpContext, Income updatedIncome, int id)
         {
             var user = await _userManager.GetUserAsync(httpContext.User);
+            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
 
-            var income = await dBContext.Incomes.FirstOrDefaultAsync(i => i.Id == id && i.UserId == user.Id);
+            var income = await dBContext.Incomes.FirstOrDefaultAsync(i => i.Id == id && i.AccountId == account.Id);
 
             if(user == null)
             {
@@ -132,8 +137,8 @@ namespace ExpenseTracker.Services
             income.IncomeAmount = updatedIncome.IncomeAmount;
             income.Description = updatedIncome.Description;
             income.Source = updatedIncome.Source;
-            income.UserId = user.Id;
-            income.User.Name = user.Name;
+            income.AccountId = account.Id;
+
 
             //income.CreatedAt = DateTime.Now;
 
