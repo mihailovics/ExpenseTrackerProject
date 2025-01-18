@@ -58,6 +58,7 @@ namespace ExpenseTracker.Data
             builder.Entity<Income>().ToTable("Incomes", t => t.HasTrigger("trg_UpdateBalanceAfterIncomeInsert"));
             builder.Entity<Income>().ToTable("Incomes", t => t.HasTrigger("trg_UpdateBalanceAfterIncomeDelete"));
             builder.Entity<Income>().ToTable("Incomes", t => t.HasTrigger("trg_UpdateBalanceOnIncomeEdit"));
+            builder.Entity<Account>().ToTable("Account", t => t.HasTrigger("trg_AfterUserInsert"));
 
 
         }

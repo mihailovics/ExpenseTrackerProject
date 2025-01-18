@@ -54,9 +54,8 @@ namespace ExpenseTracker.Helpers
         }
         public async Task<Account> GetAccountForUserAsync(string userId)
         {
-            
+
             var account = await dBContext.Accounts
-                .Include(a => a.User) 
                 .FirstOrDefaultAsync(a => a.UserId == userId);
 
             return account;
