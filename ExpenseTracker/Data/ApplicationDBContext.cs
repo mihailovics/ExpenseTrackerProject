@@ -19,7 +19,7 @@ namespace ExpenseTracker.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Income> Incomes { get; set; }
         public DbSet<Expense> Expenses { get; set; }
-        public DbSet<Account> Accounts { get; set; }
+        public DbSet<Account> Account { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -52,8 +52,8 @@ namespace ExpenseTracker.Data
             builder.Entity<Account>().
                 Property(a => a.AllowedMinus).HasDefaultValue(0);
 
-            builder.Entity<Expense>().ToTable("Expenses", t => t.HasTrigger("trg_UpdateBalanceOnExpense"));
-            builder.Entity<Expense>().ToTable("Expenses", t => t.HasTrigger("trg_UpdateBalanceOnExpenseDelete"));
+            builder.Entity<Expense>().ToTable("Expenses", t => t.HasTrigger("trg_UpdateBalanceOnOutcome"));
+            builder.Entity<Expense>().ToTable("Expenses", t => t.HasTrigger("trg_UpdateBalanceOnOutcomeDelete"));
             builder.Entity<Expense>().ToTable("Expenses", t => t.HasTrigger("trg_UpdateBalanceOnExpenseEdit"));
             builder.Entity<Income>().ToTable("Incomes", t => t.HasTrigger("trg_UpdateBalanceAfterIncomeInsert"));
             builder.Entity<Income>().ToTable("Incomes", t => t.HasTrigger("trg_UpdateBalanceAfterIncomeDelete"));

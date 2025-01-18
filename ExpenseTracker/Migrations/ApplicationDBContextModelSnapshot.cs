@@ -40,9 +40,6 @@ namespace ExpenseTracker.Migrations
                         .HasColumnType("decimal(18,2)")
                         .HasDefaultValue(0m);
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -52,7 +49,12 @@ namespace ExpenseTracker.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Accounts", (string)null);
+                    b.ToTable("Account", null, t =>
+                        {
+                            t.HasTrigger("trg_AfterUserInsert");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("ExpenseTracker.Models.Expense", b =>
@@ -164,7 +166,7 @@ namespace ExpenseTracker.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "6226fb6c-0a2d-4113-bcd0-3f65220727dc",
+                            Id = "0e5ce00a-6d8b-4fa2-a84b-22c9b4c8a0cf",
                             Name = "user",
                             NormalizedName = "user"
                         });

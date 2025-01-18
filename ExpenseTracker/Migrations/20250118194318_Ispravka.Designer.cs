@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExpenseTracker.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20250118183102_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250118194318_Ispravka")]
+    partial class Ispravka
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,7 +52,12 @@ namespace ExpenseTracker.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Account", null, t =>
+                        {
+                            t.HasTrigger("trg_AfterUserInsert");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("ExpenseTracker.Models.Expense", b =>
@@ -164,7 +169,7 @@ namespace ExpenseTracker.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "f61cd9df-607a-4baf-8fe8-7abc1fe25e75",
+                            Id = "0e5ce00a-6d8b-4fa2-a84b-22c9b4c8a0cf",
                             Name = "user",
                             NormalizedName = "user"
                         });

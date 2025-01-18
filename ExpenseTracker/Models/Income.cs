@@ -13,7 +13,7 @@ namespace ExpenseTracker.Models
         public string Source { get; set; } = "";
         [Required]
         public DateTime CreatedAt { get; set; }
-        public int AccountId { get; set; } 
+        public int? AccountId { get; set; } 
         
         public Account? Account { get; set; } = new Account();
     }

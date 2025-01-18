@@ -11,8 +11,7 @@ namespace ExpenseTracker.Models
         [Required]
         public decimal AllowedMinus { get; set; }
         public string UserId { get; set; } = "";
-        public User User { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public User? User { get; set; }
         public ICollection<Income>? Incomes { get; set; }
         public ICollection<Expense>? Expenses { get; set; }
     }

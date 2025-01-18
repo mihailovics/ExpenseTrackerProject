@@ -5,6 +5,7 @@ using ExpenseTracker.Helpers;
 using ExpenseTracker.Models;
 using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,14 +21,15 @@ namespace ExpenseTracker.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IIncomeService _incomeService;
         private readonly ICommonMethods commonMethods;
+        
 
         public IncomeController(ILogger<HomeController> logger, ApplicationDBContext DbContext, IIncomeService incomeService, ICommonMethods CommonMethods)
         {
-            
             _logger = logger;
             dBContext = DbContext;
             _incomeService = incomeService;
             commonMethods = CommonMethods;
+            
         }
 
         [HttpGet("Income/GetIncomes")]
@@ -89,8 +91,9 @@ namespace ExpenseTracker.Controllers
         [Authorize(Roles = "user")]
         public async Task<IActionResult> NewIncome(Income incomeModel)
         {
-            // System.InvalidOperation 
-                
+
+            
+
             if (ModelState.IsValid)
             {
                 var newIncome = await _incomeService.NewIncome(HttpContext, incomeModel);
