@@ -19,39 +19,156 @@ namespace ExpenseTracker.Helpers
            _userManager = userManager; 
         }
 
-        public async Task<List<int>> GetDistinctMonthsAsync(HttpContext httpContext)
-        {
-            var userId =  _userManager.GetUserId(httpContext.User);    
+        public async Task<List<int>> GetMonthsIncome(HttpContext httpContext, int? year = null, string? source = null)
+        { 
+            var userId = _userManager.GetUserId(httpContext.User);
+            
             var account = await GetAccountForUserAsync(userId);
+            
+            var query = dBContext.Incomes
+                .Where(i => i.AccountId == account.Id);
 
-            return await dBContext.Incomes
-            .Where(i => i.AccountId == account.Id)
-            .Select(i => i.CreatedAt.Month)
-            .Distinct()
-            .ToListAsync();
+            if (year.HasValue)
+            {
+                query = query.Where(i => i.CreatedAt.Year == year.Value);
+            }
+
+            if (!string.IsNullOrEmpty(source))
+            {
+                query = query.Where(i => i.Source == source);
+            }
+
+            return await query
+                .Select(i => i.CreatedAt.Month)
+                .Distinct()
+                .ToListAsync();
         }
 
-        public async Task<List<string>> GetDistinctSourcesAsync(HttpContext httpContext)
+        public async Task<List<string>> GetSourcesIncome(HttpContext httpContext, int? year = null, int? month = null)
         {
             var userId = _userManager.GetUserId(httpContext.User);
+
             var account = await GetAccountForUserAsync(userId);
-            return await dBContext.Incomes
-            .Where(i => i.AccountId == account.Id)
-            .Select(i => i.Source)
-            .Distinct()
-            .ToListAsync();
+
+            var query = dBContext.Incomes
+                .Where(i => i.AccountId == account.Id);
+
+            if (year.HasValue)
+            {
+                query = query.Where(i => i.CreatedAt.Year == year.Value);
+            }
+
+            if (month.HasValue)
+            {
+                query = query.Where(i => i.CreatedAt.Month == month.Value);
+            }
+
+            return await query
+                .Select(i => i.Source)
+                .Distinct()
+                .ToListAsync();
         }
 
-        public async Task<List<int>> GetDistinctYearsAsync(HttpContext httpContext)
+        public async Task<List<int>> GetYearsIncome(HttpContext httpContext, int? month = null, string? source = null)
         {
             var userId = _userManager.GetUserId(httpContext.User);
+
             var account = await GetAccountForUserAsync(userId);
-            return await dBContext.Incomes
-            .Where(i => i.AccountId == account.Id)
-            .Select(i => i.CreatedAt.Year)
-            .Distinct()
-            .ToListAsync();
+
+            var query = dBContext.Incomes
+                .Where(i => i.AccountId == account.Id);
+
+            if (month.HasValue)
+            {
+                query = query.Where(i => i.CreatedAt.Month == month.Value);
+            }
+
+            if (!string.IsNullOrEmpty(source))
+            {
+                query = query.Where(i => i.Source == source);
+            }
+
+            return await query
+                .Select(i => i.CreatedAt.Year)
+                .Distinct()
+                .ToListAsync();
         }
+
+        public async Task<List<int>> GetYearsExpense(HttpContext httpContext, int? month = null, string? source = null)
+        {
+            var userId = _userManager.GetUserId(httpContext.User);
+
+            var account = await GetAccountForUserAsync(userId);
+
+            var query = dBContext.Expenses
+                .Where(i => i.AccountId == account.Id);
+
+            if (month.HasValue)
+            {
+                query = query.Where(i => i.CreatedAt.Month == month.Value);
+            }
+
+            if (!string.IsNullOrEmpty(source))
+            {
+                query = query.Where(i => i.Source == source);
+            }
+
+            return await query
+                .Select(i => i.CreatedAt.Year)
+                .Distinct()
+                .ToListAsync();
+        }
+
+        public async Task<List<int>> GetMonthsExpense(HttpContext httpContext, int? year = null, string? source = null)
+        {
+            var userId = _userManager.GetUserId(httpContext.User);
+
+            var account = await GetAccountForUserAsync(userId);
+
+            var query = dBContext.Expenses
+                .Where(i => i.AccountId == account.Id);
+
+            if (year.HasValue)
+            {
+                query = query.Where(i => i.CreatedAt.Year == year.Value);
+            }
+
+            if (!string.IsNullOrEmpty(source))
+            {
+                query = query.Where(i => i.Source == source);
+            }
+
+            return await query
+                .Select(i => i.CreatedAt.Month)
+                .Distinct()
+                .ToListAsync();
+        }
+
+        public async Task<List<string>> GetSourcesExpense(HttpContext httpContext, int? year = null, int? month = null)
+        {
+            var userId = _userManager.GetUserId(httpContext.User);
+
+            var account = await GetAccountForUserAsync(userId);
+
+            var query = dBContext.Expenses
+                .Where(i => i.AccountId == account.Id);
+
+            if (year.HasValue)
+            {
+                query = query.Where(i => i.CreatedAt.Year == year.Value);
+            }
+
+            if (month.HasValue)
+            {
+                query = query.Where(i => i.CreatedAt.Month == month.Value);
+            }
+
+            return await query
+                .Select(i => i.Source)
+                .Distinct()
+                .ToListAsync();
+        }
+
         public async Task<Account> GetAccountForUserAsync(string userId)
         {
 
@@ -60,7 +177,5 @@ namespace ExpenseTracker.Helpers
 
             return account;
         }
-
-        
     }
 }

@@ -52,19 +52,41 @@ namespace ExpenseTracker.Services
 
         public async Task<ExpensePaginationDTO> GetPaginatedExpenses(HttpContext httpContext)
         {
-            List<Expense> AllExpenses = new List<Expense>();
             var pageNumberString = httpContext.Request.Query["pageNumber"].FirstOrDefault();
             int pageNumber = string.IsNullOrEmpty(pageNumberString) ? 1 : int.Parse(pageNumberString);
-            int pageSize = 5;
 
-            
+            var pageSizeString = httpContext.Request.Query["pageSize"].FirstOrDefault();
+            int pageSize = string.IsNullOrEmpty(pageSizeString) ? 5 : int.Parse(pageSizeString);
+
+            var years = httpContext.Request.Query["year"].FirstOrDefault();
+            var month = httpContext.Request.Query["month"].FirstOrDefault();
+            var source = httpContext.Request.Query["source"].FirstOrDefault();
+
+
             var user = await _userManager.GetUserAsync(httpContext.User);
             var account = await _commonMethods.GetAccountForUserAsync(user.Id);
 
             IQueryable<Expense> query = dBContext.Expenses.Where(i => i.AccountId == account.Id);
 
-            int totalIncomes = await query.CountAsync();
-            int totalPages = (int)Math.Ceiling(totalIncomes / (double)pageSize);
+            if (!string.IsNullOrEmpty(years))
+            {
+                var yearInt = int.Parse(years);
+                query = query.Where(i => i.CreatedAt.Year == yearInt);
+            }
+
+            if (!string.IsNullOrEmpty(month))
+            {
+                var monthInt = int.Parse(month);
+                query = query.Where(i => i.CreatedAt.Month == monthInt);
+            }
+
+            if (!string.IsNullOrEmpty(source))
+            {
+                query = query.Where(i => i.Source == source);
+            }
+
+            int totalExpenses = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalExpenses / (double)pageSize);
             List<Expense> pagedExpenses = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -80,7 +102,6 @@ namespace ExpenseTracker.Services
                 PageSize = pageSize,
                 Balance = account.Balance,
                 ExpenseSum = ExpenseSum
-
             };
         }
 

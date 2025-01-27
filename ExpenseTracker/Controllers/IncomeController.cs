@@ -29,18 +29,17 @@ namespace ExpenseTracker.Controllers
             dBContext = DbContext;
             _incomeService = incomeService;
             commonMethods = CommonMethods;
-            
         }
 
         [HttpGet("Income/GetIncomes")]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> GetIncomes() 
+        public async Task<IActionResult> GetIncomes(int? year = null, int? month = null, string? source = null) 
         {
             try
             {
-                var sources = await commonMethods.GetDistinctSourcesAsync(HttpContext);
-                var years = await commonMethods.GetDistinctYearsAsync(HttpContext);
-                var months = await commonMethods.GetDistinctMonthsAsync(HttpContext);
+                var sources = await commonMethods.GetSourcesIncome(HttpContext, year, month);
+                var years = await commonMethods.GetYearsIncome(HttpContext, month, source);
+                var months = await commonMethods.GetMonthsIncome(HttpContext, year, source);
 
                 var pagedIncomes = await _incomeService.GetPaginatedIncomes(HttpContext);
 
@@ -49,7 +48,12 @@ namespace ExpenseTracker.Controllers
                 ViewBag.IncomeSum = pagedIncomes.IncomeSum;
                 ViewBag.PageSize = pagedIncomes.PageSize;
                 ViewBag.Balance = pagedIncomes.Balance;
-                //Filtering
+
+
+                ViewBag.SelectedYear = year;
+                ViewBag.SelectedMonth = month;
+                ViewBag.SelectedSource = source;
+
                 ViewBag.Sources = sources;
                 ViewBag.Years = years;
                 ViewBag.Months = months;

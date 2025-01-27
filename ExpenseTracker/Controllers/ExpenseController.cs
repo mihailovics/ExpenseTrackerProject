@@ -1,4 +1,6 @@
-﻿using ExpenseTracker.Data;
+﻿using Elfie.Serialization;
+using ExpenseTracker.Data;
+using ExpenseTracker.Helpers;
 using ExpenseTracker.Models;
 using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -14,27 +16,41 @@ namespace ExpenseTracker.Controllers
         ApplicationDBContext dBContext;
         private readonly ILogger<HomeController> _logger;
         private readonly IExpenseService _ExpenseService;
-
-        public ExpenseController(ILogger<HomeController> logger, ApplicationDBContext DbContext, IExpenseService ExpenseService)
+        private readonly ICommonMethods _commonMethods;
+        public ExpenseController(ILogger<HomeController> logger, ApplicationDBContext DbContext, IExpenseService ExpenseService, ICommonMethods commonMethods)
         {
             
             _logger = logger;
             dBContext = DbContext;
             _ExpenseService = ExpenseService;
+            _commonMethods = commonMethods;
         }
 
         [HttpGet("Expense/GetExpenses")]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> GetExpenses()
+        public async Task<IActionResult> GetExpenses(int? year = null, int? month = null, string? source = null)
         {
             try
             {
+                var sources = await _commonMethods.GetSourcesExpense(HttpContext, year, month);
+                var years = await _commonMethods.GetYearsExpense(HttpContext, month, source);
+                var months = await _commonMethods.GetMonthsExpense(HttpContext, year, source);
+
                 var pagedExpenses = await _ExpenseService.GetPaginatedExpenses(HttpContext);
 
-                ViewBag.Balance = pagedExpenses.Balance;
-                ViewBag.ExpenseSum = pagedExpenses.ExpenseSum;
                 ViewBag.TotalPages = pagedExpenses.TotalPages;
                 ViewBag.CurrentPage = pagedExpenses.CurrentPage;
+                ViewBag.ExpenseSum = pagedExpenses.ExpenseSum;
+                ViewBag.PageSize = pagedExpenses.PageSize;
+                ViewBag.Balance = pagedExpenses.Balance;
+
+                ViewBag.SelectedYear = year;
+                ViewBag.SelectedMonth = month;
+                ViewBag.SelectedSource = source;
+
+                ViewBag.Sources = sources;
+                ViewBag.Years = years;
+                ViewBag.Months = months;
 
                 return View(pagedExpenses.Expenses);
             }
