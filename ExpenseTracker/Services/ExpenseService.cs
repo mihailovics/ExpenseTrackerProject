@@ -12,6 +12,7 @@ namespace ExpenseTracker.Services
         ApplicationDBContext dBContext;
         private readonly UserManager<User> _userManager;
         private readonly ICommonMethods _commonMethods;
+
         public ExpenseService(ApplicationDBContext DbContext, UserManager<User> userManager, ICommonMethods commonMethods)
         {
             dBContext = DbContext;

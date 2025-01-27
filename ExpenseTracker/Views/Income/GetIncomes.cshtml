@@ -4,7 +4,7 @@
     ViewData["Title"] = "Get Incomes";
 }
 
-<h1 class="text-center">Get All Incomes</h1>
+<h1 class="text-center">Incomes</h1>
 
 <p>
     <a asp-action="NewIncome">Add new Income</a>
@@ -17,40 +17,54 @@
     Balance: @ViewBag.Balance
 </p>
 
-<form id="filterForm" method="get" action="/Income/GetIncomes">
+<div class="form-container">
+    <h2>Filter Incomes</h2>
+    <form id="filterForm" method="get" action="/Income/GetIncomes">
+        <div class="filter-grid">
+            <div>
+                <label for="year" class="form-label">Year</label>
+                <select id="year" name="year" class="form-control">
+                    <option value="">Select Year</option>
+                    @foreach (var year in (List<int>)ViewBag.Years)
+                    {
+                        <option value="@year" selected="@(year == ViewBag.SelectedYear ? "selected" : null)">@year</option>
+                    }
+                </select>
+            </div>
 
-    <input type="hidden" name="pageNumber" value="1" />
+            <div>
+                <label for="month" class="form-label">Month</label>
+                <select id="month" name="month" class="form-control">
+                    <option value="">Select Month</option>
+                    @foreach (var month in (List<int>)ViewBag.Months)
+                    {
+                        <option value="@month" selected="@(month == ViewBag.SelectedMonth ? "selected" : null)">@month</option>
+                    }
+                </select>
+            </div>
 
-    <select id="year" name="year" class="form-control">
-        <option value="">Select Year</option>
-        @foreach (var year in (List<int>)ViewBag.Years)
-        {
-            <option value="@year" selected="@(year == ViewBag.SelectedYear ? "selected" : null)">@year</option>
-        }
-    </select>
+            <div>
+                <label for="source" class="form-label">Source</label>
+                <select id="source" name="source" class="form-control">
+                    <option value="">Select Source</option>
+                    @foreach (var source in (List<string>)ViewBag.Sources)
+                    {
+                        <option value="@source" selected="@(source == ViewBag.SelectedSource ? "selected" : null)">@source</option>
+                    }
+                </select>
+            </div>
 
-    <select name="month" class="form-control">
-        <option value="">Select Month</option>
-        @foreach (var month in (List<int>)ViewBag.Months)
-        {
-            <option value="@month" selected="@(month == ViewBag.SelectedMonth ? "selected" : null)">@month</option>
-        }
-    </select>
-
-    <select name="source" class="form-control">
-        <option value="">Select Source</option>
-        @foreach (var source in (List<string>)ViewBag.Sources)
-        {
-            <option value="@source" selected="@(source == ViewBag.SelectedSource ? "selected" : null)">@source</option>
-        }
-    </select>
-
-    <select name="pageSize" class="form-control">
-        <option value="5" selected="@(ViewBag.PageSize == 5 ? "selected" : null)">5 per page</option>
-        <option value="10" selected="@(ViewBag.PageSize == 10 ? "selected" : null)">10 per page</option>
-        <option value="20" selected="@(ViewBag.PageSize == 20 ? "selected" : null)">20 per page</option>
-    </select>
-</form>
+            <div>
+                <label for="pageSize" class="form-label">Items Per Page</label>
+                <select id="pageSize" name="pageSize" class="form-control">
+                    <option value="5" selected="@(ViewBag.PageSize == 5 ? "selected" : null)">5 per page</option>
+                    <option value="10" selected="@(ViewBag.PageSize == 10 ? "selected" : null)">10 per page</option>
+                    <option value="20" selected="@(ViewBag.PageSize == 20 ? "selected" : null)">20 per page</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
     @**@
 @if (Model.Count() > 0 ){
 <table class="table">
