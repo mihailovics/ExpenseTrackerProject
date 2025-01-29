@@ -177,5 +177,23 @@ namespace ExpenseTracker.Helpers
 
             return account;
         }
+
+        public async Task<List<object>> GetFiltersIncome(HttpContext httpContext, int? year = null, int? month = null, string? source = null)
+        {
+            var userId = _userManager.GetUserId(httpContext.User);
+
+            var account = await GetAccountForUserAsync(userId);
+
+            var query = dBContext.Incomes
+                .Where(i => i.AccountId == account.Id);
+
+            return null;
+
+        }
+
+        public Task<List<object>> GetFiltersExpenses(HttpContext httpContext, int? year = null, int? month = null, string? source = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -95,9 +95,6 @@ namespace ExpenseTracker.Controllers
         [Authorize(Roles = "user")]
         public async Task<IActionResult> NewIncome(Income incomeModel)
         {
-
-            
-
             if (ModelState.IsValid)
             {
                 var newIncome = await _incomeService.NewIncome(HttpContext, incomeModel);
