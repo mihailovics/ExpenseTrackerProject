@@ -6,9 +6,9 @@ namespace ExpenseTracker.Services
     public interface IExpenseService
     {
         Task<ExpensePaginationDTO> GetPaginatedExpenses(HttpContext httpContext);
-        Task<ExpensePaginationDTO> GetAllExpenses(HttpContext httpContext);
-        Task<Expense> NewExpense(HttpContext httpContext, Expense ExpenseModel);
-        Task<bool> EditExpense(HttpContext httpContext, Expense ExpenseModel, int id);
+        Task<bool> NewExpense(string userId, Expense ExpenseModel);
+        Task<bool> EditExpense(string userId, Expense ExpenseModel, int id);
         Task DeleteExpense(int id);
+        Task<Expense> FindByid(int id);
     }
 }

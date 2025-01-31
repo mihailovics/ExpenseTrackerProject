@@ -31,28 +31,9 @@ namespace ExpenseTracker.Services
             }
         }
 
-        public async Task<ExpensePaginationDTO> GetAllExpenses(HttpContext httpContext)
-        {
-            List<Expense> AllExpenses = new List<Expense>();
-
-           
-            var user = await _userManager.GetUserAsync(httpContext.User);
-            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
-
-            AllExpenses = await dBContext.Expenses.Where(i => i.AccountId == account.Id).ToListAsync();
-
-            decimal ExpenseSum = AllExpenses.Sum(i => i.ExpenseAmount);
-
-            return new ExpensePaginationDTO
-            {
-                ExpenseSum = ExpenseSum,
-                Balance = account.Balance,
-                Expenses = AllExpenses
-            };
-        }
-
         public async Task<ExpensePaginationDTO> GetPaginatedExpenses(HttpContext httpContext)
         {
+            // Pitanje da li treba sve da promenim da ne koristim uopste httpContext
             var pageNumberString = httpContext.Request.Query["pageNumber"].FirstOrDefault();
             int pageNumber = string.IsNullOrEmpty(pageNumberString) ? 1 : int.Parse(pageNumberString);
 
@@ -62,7 +43,6 @@ namespace ExpenseTracker.Services
             var years = httpContext.Request.Query["year"].FirstOrDefault();
             var month = httpContext.Request.Query["month"].FirstOrDefault();
             var source = httpContext.Request.Query["source"].FirstOrDefault();
-
 
             var user = await _userManager.GetUserAsync(httpContext.User);
             var account = await _commonMethods.GetAccountForUserAsync(user.Id);
@@ -106,43 +86,59 @@ namespace ExpenseTracker.Services
             };
         }
 
-        public async Task<Expense> NewExpense(HttpContext httpContext, Expense ExpenseModel)
+        public async Task<bool> NewExpense(string userId, Expense ExpenseModel)
         {
-            var user = await _userManager.GetUserAsync(httpContext.User);
-            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
+            try
+            {
+                var account = await _commonMethods.GetAccountForUserAsync(userId);
 
-            
-            ExpenseModel.Account = account;
-            ExpenseModel.AccountId = account.Id;
-            ExpenseModel.CreatedAt = DateTime.Now;
+                ExpenseModel.Account = account;
+                ExpenseModel.AccountId = account.Id;
+                ExpenseModel.CreatedAt = DateTime.Now;
 
-            dBContext.Expenses.Add(ExpenseModel);
-            await dBContext.SaveChangesAsync();
+                dBContext.Expenses.Add(ExpenseModel);
+                await dBContext.SaveChangesAsync();
 
-            return ExpenseModel;
-        }
-
-        public async Task<bool> EditExpense(HttpContext httpContext, Expense ExpenseModel, int id)
-        {
-            var user = await _userManager.GetUserAsync(httpContext.User);
-            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
-
-            var Expense = await dBContext.Expenses.FirstOrDefaultAsync(i => i.Id == id && i.AccountId == account.Id);
-
-            if (user == null)
+                return true;
+            }
+            catch (DbUpdateException) 
             {
                 return false;
             }
+        }
 
-            Expense.ExpenseAmount = ExpenseModel.ExpenseAmount;
-            Expense.Description = ExpenseModel.Description;
-            Expense.Source = ExpenseModel.Source;
-            Expense.AccountId = account.Id;
+        public async Task<bool> EditExpense(string userId, Expense ExpenseModel, int id)
+        {
+            try
+            {
+                var account = await _commonMethods.GetAccountForUserAsync(userId);
 
+                var Expense = await dBContext.Expenses.FirstOrDefaultAsync(i => i.Id == id && i.AccountId == account.Id);
 
-            await dBContext.SaveChangesAsync();
+                if (userId == null)
+                {
+                    return false;
+                }
 
-            return true;
+                Expense.ExpenseAmount = ExpenseModel.ExpenseAmount;
+                Expense.Description = ExpenseModel.Description;
+                Expense.Source = ExpenseModel.Source;
+                Expense.AccountId = account.Id;
+
+                await dBContext.SaveChangesAsync();
+
+                return true;
+            }
+            catch (DbUpdateException ex)
+            {
+                return false;
+            }
+        }
+
+        public async Task<Expense> FindByid(int id)
+        { 
+            var expense = await dBContext.Expenses.FindAsync(id);
+            return expense;
         }
     }
 }

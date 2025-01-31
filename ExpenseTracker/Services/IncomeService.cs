@@ -35,7 +35,7 @@ namespace ExpenseTracker.Services
             var month = httpContext.Request.Query["month"].FirstOrDefault();
             var source = httpContext.Request.Query["source"].FirstOrDefault();
 
-            
+
             var user = await _userManager.GetUserAsync(httpContext.User);
             var account = await _commonMethods.GetAccountForUserAsync(user.Id);
 
@@ -43,13 +43,13 @@ namespace ExpenseTracker.Services
 
             if (!string.IsNullOrEmpty(years))
             {
-                var yearInt = int.Parse(years); 
+                var yearInt = int.Parse(years);
                 query = query.Where(i => i.CreatedAt.Year == yearInt);
             }
 
             if (!string.IsNullOrEmpty(month))
             {
-                var monthInt = int.Parse(month); 
+                var monthInt = int.Parse(month);
                 query = query.Where(i => i.CreatedAt.Month == monthInt);
             }
 
@@ -67,7 +67,7 @@ namespace ExpenseTracker.Services
 
             decimal incomeSum = pagedIncomes.Sum(i => i.IncomeAmount);
 
-            return new IncomePaginationDTO 
+            return new IncomePaginationDTO
             {
                 TotalPages = totalPages,
                 CurrentPage = pageNumber,
@@ -78,38 +78,25 @@ namespace ExpenseTracker.Services
             };
         }
 
-        public async Task<IncomePaginationDTO> GetAllIncomes(HttpContext httpContext)
+        public async Task<bool> NewIncome(string userId, Income incomeModel)
         {
-            List<Income> AllIncomes = new List<Income>();
-
-            var user = await _userManager.GetUserAsync(httpContext.User);
-            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
-
-            AllIncomes = await dBContext.Incomes.Where(i => i.AccountId == account.Id).ToListAsync();
-
-            decimal incomeSum = AllIncomes.Sum(i => i.IncomeAmount);
-
-            return new IncomePaginationDTO
+            try
             {
-                IncomeSum = incomeSum,
-                Balance = account.Balance,
-                Incomes = AllIncomes
-            };
-        }
+                var account = await _commonMethods.GetAccountForUserAsync(userId);
 
-        public async Task<Income> NewIncome(HttpContext httpContext, Income incomeModel)
-        {
-            var user = await _userManager.GetUserAsync(httpContext.User);
-            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
+                incomeModel.Account = account;
+                incomeModel.AccountId = account.Id;
+                incomeModel.CreatedAt = DateTime.Now;
 
-            incomeModel.Account = account;
-            incomeModel.AccountId = account.Id; 
-            incomeModel.CreatedAt = DateTime.Now;
+                dBContext.Incomes.Add(incomeModel);
+                await dBContext.SaveChangesAsync();
 
-            dBContext.Incomes.Add(incomeModel);
-            await dBContext.SaveChangesAsync();
-
-            return incomeModel;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
         
         public async Task DeleteIncome(int id)
@@ -122,14 +109,13 @@ namespace ExpenseTracker.Services
             }
         }
 
-        public async Task<bool> EditIncome(HttpContext httpContext, Income updatedIncome, int id)
+        public async Task<bool> EditIncome(string userId, Income updatedIncome, int id)
         {
-            var user = await _userManager.GetUserAsync(httpContext.User);
-            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
+            var account = await _commonMethods.GetAccountForUserAsync(userId);
 
             var income = await dBContext.Incomes.FirstOrDefaultAsync(i => i.Id == id && i.AccountId == account.Id);
 
-            if(user == null)
+            if(userId == null)
             {
                 return false;
             }
@@ -146,6 +132,12 @@ namespace ExpenseTracker.Services
 
             return true;
 
+        }
+
+        public async Task<Income> FindByid(int id)
+        {
+            var income = await dBContext.Incomes.FindAsync(id);
+            return income;  
         }
     }
 }

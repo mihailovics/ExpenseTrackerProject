@@ -8,7 +8,6 @@
 
 <p>
     <a asp-action="NewExpense">Add new Expense</a>
-    <a class="float-end" href="/Expense/GetAllExpenses">View all Expenses</a>
 </p>
 <p class="d-flex justify-content-center">
     Sum of shown Expenses: @ViewBag.ExpenseSum
@@ -19,7 +18,7 @@
 
 
 <div class="form-container">
-    <h2>Filter Incomes</h2>
+    <h2>Filter Expenses</h2>
     <form id="filterForm" method="get" action="/Expense/GetExpenses">
         <div class="filter-grid">
             <div>
