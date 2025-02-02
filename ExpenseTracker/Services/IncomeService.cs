@@ -55,7 +55,8 @@ namespace ExpenseTracker.Services
 
             if (!string.IsNullOrEmpty(source))
             {
-                query = query.Where(i => i.Source == source);
+                var sourceInt = int.Parse(source);
+                query = query.Where(i => i.SourceId == sourceInt);
             }
 
             int totalIncomes = await query.CountAsync();

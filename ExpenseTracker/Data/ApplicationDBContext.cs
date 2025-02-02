@@ -20,6 +20,7 @@ namespace ExpenseTracker.Data
         public DbSet<Income> Incomes { get; set; }
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<Account> Account { get; set; }
+        public DbSet<Source> Sources { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

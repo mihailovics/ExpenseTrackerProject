@@ -10,7 +10,8 @@ namespace ExpenseTracker.Models
         public decimal ExpenseAmount { get; set; }
         public string? Description { get; set; }
         [Required]
-        public string Source { get; set; } = "";
+        public int SourceId { get; set; }
+        public Source Source { get; set; }
         [Required]
         public DateTime CreatedAt { get; set; }
         public int AccountId { get; set; } 

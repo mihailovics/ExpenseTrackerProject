@@ -26,16 +26,17 @@ namespace ExpenseTracker.Controllers
             _userManager = userManager;
         }
 
+        // Smisliti nacin kako da pamtim allowedMinus i da ga vracam tamo umesto sve u balance
         [HttpGet]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> GetExpenses(int? year = null, int? month = null, string? source = null)
+        public async Task<IActionResult> Index(int? year = null, int? month = null, int? source = null)
         {
             var userId = _userManager.GetUserId(User);
 
             var sources = await _commonMethods.GetSources("expense",userId, year, month);
             var years = await _commonMethods.GetYears("expense",userId, month, source);
             var months = await _commonMethods.GetMonths("expense",userId, year, source);
-
+            // Izbaciti slanje httpContexta (koristiti IHttpAccessor u klasi commonmethod)
             var pagedExpenses = await _expenseService.GetPaginatedExpenses(HttpContext);
             // ViewModel napraviti umesto 
             ViewBag.TotalPages = pagedExpenses.TotalPages;

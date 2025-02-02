@@ -18,8 +18,8 @@ namespace ExpenseTracker.Helpers
            dBContext = DBContext;
            _userManager = userManager; 
         }
-        //Skratiti kod ponavlja se
-        public async Task<List<int>> GetMonths(string model, string userId, int? year = null, string? source = null)
+        //Skratiti kod, ponavlja se smisliti nacin kako
+        public async Task<List<int>> GetMonths(string model, string userId, int? year = null, int? source = null)
         { 
             var account = await GetAccountForUserAsync(userId);
 
@@ -33,9 +33,9 @@ namespace ExpenseTracker.Helpers
                     query = query.Where(i => i.CreatedAt.Year == year.Value);
                 }
 
-                if (!string.IsNullOrEmpty(source))
+                if (source.HasValue)
                 {
-                    query = query.Where(i => i.Source == source);
+                    query = query.Where(i => i.SourceId == source);
                 }
 
                 return await query
@@ -52,9 +52,9 @@ namespace ExpenseTracker.Helpers
                     query = query.Where(i => i.CreatedAt.Year == year.Value);
                 }
 
-                if (!string.IsNullOrEmpty(source))
+                if (source.HasValue)
                 {
-                    query = query.Where(i => i.Source == source);
+                    query = query.Where(i => i.SourceId == source);
                 }
 
                 return await query
@@ -64,7 +64,7 @@ namespace ExpenseTracker.Helpers
             }
         }
 
-        public async Task<List<string>> GetSources(string model, string userId, int? year = null, int? month = null)
+        public async Task<List<int>> GetSources(string model, string userId, int? year = null, int? month = null)
         {
             var account = await GetAccountForUserAsync(userId);
 
@@ -84,7 +84,7 @@ namespace ExpenseTracker.Helpers
                 }
 
                 return await query
-                    .Select(i => i.Source)
+                    .Select(i => i.SourceId)
                     .Distinct()
                     .ToListAsync();
             }
@@ -104,14 +104,14 @@ namespace ExpenseTracker.Helpers
                 }
 
                 return await query
-                    .Select(i => i.Source)
+                    .Select(i => i.SourceId)
                     .Distinct()
                     .ToListAsync();
             }
             
         }
 
-        public async Task<List<int>> GetYears(string model, string userId, int? month = null, string? source = null)
+        public async Task<List<int>> GetYears(string model, string userId, int? month = null, int? source = null)
         {
             var account = await GetAccountForUserAsync(userId);
 
@@ -125,9 +125,9 @@ namespace ExpenseTracker.Helpers
                     query = query.Where(i => i.CreatedAt.Month == month.Value);
                 }
 
-                if (!string.IsNullOrEmpty(source))
+                if (source.HasValue)
                 {
-                    query = query.Where(i => i.Source == source);
+                    query = query.Where(i => i.SourceId == source);
                 }
 
                 return await query
@@ -145,9 +145,9 @@ namespace ExpenseTracker.Helpers
                     query = query.Where(i => i.CreatedAt.Month == month.Value);
                 }
 
-                if (!string.IsNullOrEmpty(source))
+                if (source.HasValue)
                 {
-                    query = query.Where(i => i.Source == source);
+                    query = query.Where(i => i.SourceId == source);
                 }
 
                 return await query

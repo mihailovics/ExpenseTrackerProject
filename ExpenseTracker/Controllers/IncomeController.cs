@@ -32,7 +32,7 @@ namespace ExpenseTracker.Controllers
 
         [HttpGet]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> GetIncomes(int? year = null, int? month = null, string? source = null) 
+        public async Task<IActionResult> Index(int? year = null, int? month = null, int? source = null) 
         {
             var userId = _userManager.GetUserId(User);
 

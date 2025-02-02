@@ -1,25 +1,25 @@
-﻿@model IEnumerable<ExpenseTracker.Models.Income>
+﻿@model IEnumerable<ExpenseTracker.Models.Expense>
 
 @{
-    ViewData["Title"] = "Get Incomes";
+    ViewData["Title"] = "Get Expenses";
 }
 
-<h1 class="text-center">Incomes</h1>
+<h1 class="text-center">Expenses</h1>
 
 <p>
-    <a asp-action="NewIncome">Add new Income</a>
-    
+    <a asp-action="NewExpense">Add new Expense</a>
 </p>
 <p class="d-flex justify-content-center">
-    Sum of shown incomes: @ViewBag.IncomeSum
+    Sum of shown Expenses: @ViewBag.ExpenseSum
 </p>
 <p class="d-flex justify-content-center">
     Balance: @ViewBag.Balance
 </p>
 
+
 <div class="form-container">
-    <h2>Filter Incomes</h2>
-    <form id="filterForm" method="get" action="/Income/GetIncomes">
+    <h2>Filter Expenses</h2>
+    <form id="filterForm" method="get" action="/Expense/GetExpenses">
         <div class="filter-grid">
             <div>
                 <label for="year" class="form-label">Year</label>
@@ -47,7 +47,7 @@
                 <label for="source" class="form-label">Source</label>
                 <select id="source" name="source" class="form-control">
                     <option value="">Select Source</option>
-                    @foreach (var source in (List<string>)ViewBag.Sources)
+                    @foreach (var source in (List<int>)ViewBag.Sources)
                     {
                         <option value="@source" selected="@(source == ViewBag.SelectedSource ? "selected" : null)">@source</option>
                     }
@@ -65,13 +65,12 @@
         </div>
     </form>
 </div>
-    @**@
 @if (Model.Count() > 0 ){
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.IncomeAmount)
+                @Html.DisplayNameFor(model => model.ExpenseAmount)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Description)
@@ -92,7 +91,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.IncomeAmount) EUR
+                @Html.DisplayFor(modelItem => item.ExpenseAmount) EUR
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
@@ -111,52 +110,50 @@
 }
     </tbody>
 </table>
-
     <nav class="d-flex justify-content-center">
         <ul class="pagination">
             <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
-                <a class="page-link" href="/Income/GetIncomes?pageNumber=@(ViewBag.CurrentPage - 1)&pageSize=@ViewBag.PageSize&year=@ViewBag.SelectedYear&month=@ViewBag.SelectedMonth&source=@ViewBag.SelectedSource">Previous</a>
+                <a class="page-link" href="/Expense/GetExpenses?pageNumber=@(ViewBag.CurrentPage - 1)&pageSize=@ViewBag.PageSize&year=@ViewBag.SelectedYear&month=@ViewBag.SelectedMonth&source=@ViewBag.SelectedSource">Previous</a>
             </li>
 
             @for (int i = 1; i <= @ViewBag.TotalPages; i++)
             {
                 <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
-                    <a class="page-link" href="/Income/GetIncomes?pageNumber=@i&pageSize=@ViewBag.PageSize&year=@ViewBag.SelectedYear&month=@ViewBag.SelectedMonth&source=@ViewBag.SelectedSource">@i</a>
+                    <a class="page-link" href="/Expense/GetExpenses?pageNumber=@i&pageSize=@ViewBag.PageSize&year=@ViewBag.SelectedYear&month=@ViewBag.SelectedMonth&source=@ViewBag.SelectedSource">@i</a>
                 </li>
             }
 
             <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
-                <a class="page-link" href="/Income/GetIncomes?pageNumber=@(ViewBag.CurrentPage + 1)&pageSize=@ViewBag.PageSize&year=@ViewBag.SelectedYear&month=@ViewBag.SelectedMonth&source=@ViewBag.SelectedSource">Next</a>
+                <a class="page-link" href="/Expense/GetExpenses?pageNumber=@(ViewBag.CurrentPage + 1)&pageSize=@ViewBag.PageSize&year=@ViewBag.SelectedYear&month=@ViewBag.SelectedMonth&source=@ViewBag.SelectedSource">Next</a>
             </li>
         </ul>
     </nav>
-
+    <p class="d-flex justify-content-center">
+        Notice! : Consider reconfiguring allowed minus when deleting Expense because whole sum is getting put in Balance
+    </p>
 
     <script>
-        
+
         document.addEventListener("DOMContentLoaded", function () {
-            
+
             const yearDropdown = document.getElementById("year");
             const monthDropdown = document.querySelector("select[name='month']");
             const sourceDropdown = document.querySelector("select[name='source']");
             const pageSizeDropdown = document.querySelector("select[name='pageSize']");
 
-            
+
             yearDropdown.addEventListener("change", submitForm);
             monthDropdown.addEventListener("change", submitForm);
             sourceDropdown.addEventListener("change", submitForm);
             pageSizeDropdown.addEventListener("change", submitForm);
 
-            
+
             function submitForm() {
                 document.getElementById("filterForm").submit();
             }
         });
     </script>
-     
 }
 else{
-        <p>No Incomes found.</p>
+    <p>No Expense result.</p>
 }
-
-
