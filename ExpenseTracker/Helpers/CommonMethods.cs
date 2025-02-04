@@ -164,5 +164,10 @@ namespace ExpenseTracker.Helpers
 
             return account;
         }
+
+        public async Task<List<Source>> ShowSources()
+        {
+            return await dBContext.Sources.ToListAsync();
+        }
     }
 }

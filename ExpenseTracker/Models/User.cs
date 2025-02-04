@@ -5,7 +5,6 @@ namespace ExpenseTracker.Models
 {
     public class User : IdentityUser
     {
-        public Account Account { get; set; }
-        
+        public Account Account { get; set; }  
     }
 }

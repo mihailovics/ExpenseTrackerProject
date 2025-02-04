@@ -1,4 +1,4 @@
-﻿@model ExpenseTracker.Models.Income
+﻿@model ExpenseTracker.DTOs.IncomeViewModel
 
 @{
     ViewData["Title"] = "NewIncome";
@@ -23,11 +23,13 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Source" class="control-label"></label>
-                <input asp-for="Source" class="form-control" />
-                <span asp-validation-for="Source" class="text-danger"></span>
+                <label asp-for="SourceId" class="control-label"></label>
+                <select asp-for="SourceId" asp-items="@Model.Sources" class="form-control">
+                    <option value="">-- Select a Source --</option>
+                </select>
+                <span asp-validation-for="SourceId" class="text-danger"></span>
+                
             </div>
-            
             <div class="pt-3 form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -36,7 +38,7 @@
 </div>
 
 <div class="d-flex justify-content-center">
-    <a href="/Income/GetIncomes">Back to List</a>
+    <a href="/Income">Back to List</a>
 </div>
 
 

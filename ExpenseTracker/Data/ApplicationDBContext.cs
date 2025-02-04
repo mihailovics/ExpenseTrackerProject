@@ -32,7 +32,6 @@ namespace ExpenseTracker.Data
 
             var user = new IdentityRole("user");
             user.NormalizedName = "user";
-            
 
             builder.Entity<IdentityRole>().HasData(user);
 
@@ -60,11 +59,7 @@ namespace ExpenseTracker.Data
             builder.Entity<Income>().ToTable("Incomes", t => t.HasTrigger("trg_UpdateBalanceAfterIncomeDelete"));
             builder.Entity<Income>().ToTable("Incomes", t => t.HasTrigger("trg_UpdateBalanceOnIncomeEdit"));
             builder.Entity<Account>().ToTable("Account", t => t.HasTrigger("trg_AfterUserInsert"));
-
-
+            builder.Entity<Account>().ToTable("Account", t => t.HasTrigger("trg_AfterUserInsert"));
         }
-        
-
-
     }
 }

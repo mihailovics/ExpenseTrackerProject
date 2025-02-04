@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
-// Add services to the container.
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IIncomeService, IncomeService>();
@@ -28,7 +28,6 @@ builder.Services.AddDefaultIdentity<User>(options =>
 })
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDBContext>();
-
 
 var app = builder.Build();
 

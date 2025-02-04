@@ -1,8 +1,11 @@
-﻿using ExpenseTracker.Data;
+﻿using System.Linq;
+using ExpenseTracker.Data;
 using ExpenseTracker.DTOs;
 using ExpenseTracker.Helpers;
 using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration.UserSecrets;
@@ -14,85 +17,107 @@ namespace ExpenseTracker.Services
         ApplicationDBContext dBContext;
         private readonly UserManager<User> _userManager;
         private readonly ICommonMethods _commonMethods;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IncomeService(ApplicationDBContext DbContext, UserManager<User> userManager, ICommonMethods commonMethods) 
+        public IncomeService(ApplicationDBContext DbContext, UserManager<User> userManager, ICommonMethods commonMethods, IHttpContextAccessor httpContextAccessor) 
         {
             dBContext = DbContext;
             _userManager = userManager;
             _commonMethods = commonMethods;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<IncomePaginationDTO> GetPaginatedIncomes(HttpContext httpContext)
+        public async Task<PaginationViewModel> GetPaginatedIncomes(int? year, int? month, int? source, int? PageNumber, int? PageSize)
         {
-            //List<Income> AllIncomes = new List<Income>();
-            var pageNumberString = httpContext.Request.Query["pageNumber"].FirstOrDefault();
-            int pageNumber = string.IsNullOrEmpty(pageNumberString) ? 1 : int.Parse(pageNumberString);
-
-            var pageSizeString = httpContext.Request.Query["pageSize"].FirstOrDefault();
-            int pageSize = string.IsNullOrEmpty(pageSizeString) ? 5 : int.Parse(pageSizeString);
-
-            var years = httpContext.Request.Query["year"].FirstOrDefault();
-            var month = httpContext.Request.Query["month"].FirstOrDefault();
-            var source = httpContext.Request.Query["source"].FirstOrDefault();
-
-
-            var user = await _userManager.GetUserAsync(httpContext.User);
+            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
             var account = await _commonMethods.GetAccountForUserAsync(user.Id);
 
             IQueryable<Income> query = dBContext.Incomes.Where(i => i.AccountId == account.Id);
 
-            if (!string.IsNullOrEmpty(years))
+            if (year.HasValue)
             {
-                var yearInt = int.Parse(years);
-                query = query.Where(i => i.CreatedAt.Year == yearInt);
+                query = query.Where(i => i.CreatedAt.Year == year);
             }
 
-            if (!string.IsNullOrEmpty(month))
+            if (month.HasValue)
             {
-                var monthInt = int.Parse(month);
-                query = query.Where(i => i.CreatedAt.Month == monthInt);
+                query = query.Where(i => i.CreatedAt.Month == month);
             }
 
-            if (!string.IsNullOrEmpty(source))
+            if (source.HasValue)
             {
-                var sourceInt = int.Parse(source);
-                query = query.Where(i => i.SourceId == sourceInt);
+                query = query.Where(i => i.SourceId == source);
             }
 
+            int pageNumber = PageNumber==null ? 1 : (int)PageNumber;
+            int pageSize = PageSize==null ? 5 : (int)PageSize;
             int totalIncomes = await query.CountAsync();
-            int totalPages = (int)Math.Ceiling(totalIncomes / (double)pageSize);
+            int totalPages = (int)Math.Ceiling((double)(totalIncomes / pageSize));
             List<Income> pagedIncomes = await query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((int)((pageNumber - 1) * pageSize))
+                .Take((int)pageSize)
                 .ToListAsync();
 
             decimal incomeSum = pagedIncomes.Sum(i => i.IncomeAmount);
 
-            return new IncomePaginationDTO
+            var sources = await _commonMethods.GetSources("income", user.Id, year, month);
+            var years = await _commonMethods.GetYears("income", user.Id, month, source);
+            var months = await _commonMethods.GetMonths("income", user.Id, year, source);
+
+
+            return new PaginationViewModel
             {
                 TotalPages = totalPages,
                 CurrentPage = pageNumber,
                 Incomes = pagedIncomes,
                 PageSize = pageSize,
                 Balance = account.Balance,
-                IncomeSum = incomeSum
+                IncomeSum = incomeSum,
+                SelectedMonth = month,
+                SelectedSource = source,
+                SelectedYear = year,
+                Years = years.Select(y => new SelectListItem
+                {
+                    Value = y.ToString(),
+                    Text = y.ToString()
+                }).ToList(),
+                Months = months.Select(m => new SelectListItem
+                {
+                    Value = m.ToString(),
+                    Text = m.ToString()
+                }).ToList(),
+                Sources = sources.Select(s => new SelectListItem
+                {
+                    Value = s.ToString(),
+                    Text = s.ToString()
+                }).ToList(),
             };
         }
 
-        public async Task<bool> NewIncome(string userId, Income incomeModel)
+        public async Task<bool> NewIncome(string userId, IncomeViewModel incomeModel)
         {
             try
             {
                 var account = await _commonMethods.GetAccountForUserAsync(userId);
 
-                incomeModel.Account = account;
-                incomeModel.AccountId = account.Id;
-                incomeModel.CreatedAt = DateTime.Now;
-
-                dBContext.Incomes.Add(incomeModel);
+                var income = new Income
+                {
+                    IncomeAmount = incomeModel.IncomeAmount,
+                    Account = account,
+                    AccountId = account.Id,
+                    CreatedAt = DateTime.Now,
+                    Description = incomeModel.Description,
+                    SourceId = incomeModel.SourceId,
+                };
+                
+                dBContext.Incomes.Add(income);
                 await dBContext.SaveChangesAsync();
 
                 return true;
+            }
+            catch(SqlException ex)
+            {
+                return false;
             }
             catch (Exception ex)
             {
@@ -126,13 +151,9 @@ namespace ExpenseTracker.Services
             income.Source = updatedIncome.Source;
             income.AccountId = account.Id;
 
-
-            //income.CreatedAt = DateTime.Now;
-
             await dBContext.SaveChangesAsync();
 
             return true;
-
         }
 
         public async Task<Income> FindByid(int id)

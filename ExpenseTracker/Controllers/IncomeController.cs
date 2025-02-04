@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGeneration;
 using NuGet.Packaging.Signing;
@@ -32,47 +33,53 @@ namespace ExpenseTracker.Controllers
 
         [HttpGet]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> Index(int? year = null, int? month = null, int? source = null) 
+        public async Task<IActionResult> Index(int? year = null, int? month = null, int? source = null, int? pageNumber = null, int? pageSize = null) 
         {
             var userId = _userManager.GetUserId(User);
 
-            var sources = await commonMethods.GetSources("income",userId, year, month);
-            var years = await commonMethods.GetYears("income",userId, month, source);
-            var months = await commonMethods.GetMonths("income",userId, year, source);
+            var pagedIncomes = await _incomeService.GetPaginatedIncomes(year, month, source, pageNumber, pageSize);
 
-            var pagedIncomes = await _incomeService.GetPaginatedIncomes(HttpContext);
+            PaginationViewModel model = new PaginationViewModel
+            {
+                TotalPages = pagedIncomes.TotalPages,
+                CurrentPage = pagedIncomes.CurrentPage,
+                PageSize = pagedIncomes.PageSize,
+                Balance = pagedIncomes.Balance,
+                IncomeSum = pagedIncomes.IncomeSum,
+                Incomes = pagedIncomes.Incomes,
+                SelectedMonth = month,
+                SelectedSource = source,
+                SelectedYear = year,
+                Months = pagedIncomes.Months,
+                Sources = pagedIncomes.Sources,
+                Years = pagedIncomes.Years,
+            };
 
-            ViewBag.TotalPages = pagedIncomes.TotalPages;
-            ViewBag.CurrentPage = pagedIncomes.CurrentPage;
-            ViewBag.IncomeSum = pagedIncomes.IncomeSum;
-            ViewBag.PageSize = pagedIncomes.PageSize;
-            ViewBag.Balance = pagedIncomes.Balance;
-
-
-            ViewBag.SelectedYear = year;
-            ViewBag.SelectedMonth = month;
-            ViewBag.SelectedSource = source;
-
-            ViewBag.Sources = sources;
-            ViewBag.Years = years;
-            ViewBag.Months = months;
-
-            return View(pagedIncomes.Incomes);
+            return View(model);
         }
 
         [HttpGet]
         [Authorize(Roles = "user")]
-        public IActionResult NewIncome()
+        public async Task<IActionResult> NewIncome()
         {
-            return View();
+            var viewModel = new IncomeViewModel
+            {
+                Sources = (await commonMethods.ShowSources())
+                 .Select(s => new SelectListItem
+                 {
+                     Value = s.Id.ToString(),
+                     Text = s.Name
+                 }).ToList()
+            };
+            return View(viewModel);
         }
 
         [HttpPost]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> NewIncome(Income incomeModel)
+        public async Task<IActionResult> NewIncome(IncomeViewModel incomeModel)
         {
             var userId = _userManager.GetUserId(User);
-
+            
             if (ModelState.IsValid)
             {
                 var newIncome = await _incomeService.NewIncome(userId, incomeModel);
@@ -121,7 +128,6 @@ namespace ExpenseTracker.Controllers
         [Authorize(Roles = "user")]
         public async Task<IActionResult> DeleteIncome([FromForm]int id) 
         {
-            
             if (ModelState.IsValid)
             {
                 await _incomeService.DeleteIncome(id);
@@ -131,8 +137,6 @@ namespace ExpenseTracker.Controllers
             {
                 return RedirectToAction("Delete/" + id);
             }
-            
-
         }
     }
 }
