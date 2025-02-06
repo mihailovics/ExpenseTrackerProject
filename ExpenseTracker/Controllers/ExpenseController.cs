@@ -36,9 +36,9 @@ namespace ExpenseTracker.Controllers
         {
             var userId = _userManager.GetUserId(User);
 
-            var pagedIncomes = await _expenseService.GetPaginatedExpenses(year, month, source, pageNumber, pageSize);
+            PaginationViewModel pagedIncomes = await _expenseService.GetPaginatedExpenses(year, month, source, pageNumber, pageSize);
 
-            PaginationViewModel model = new PaginationViewModel
+            /*PaginationViewModel model = new PaginationViewModel
             {
                 TotalPages = pagedIncomes.TotalPages,
                 CurrentPage = pagedIncomes.CurrentPage,
@@ -52,9 +52,9 @@ namespace ExpenseTracker.Controllers
                 Months = pagedIncomes.Months,
                 Sources = pagedIncomes.Sources,
                 Years = pagedIncomes.Years,
-            };
+            };*/
 
-            return View(model);
+            return View(pagedIncomes);
         }
 
         [HttpGet]
@@ -82,6 +82,15 @@ namespace ExpenseTracker.Controllers
             if (ModelState.IsValid)
             {
                 var newIncome = await _expenseService.NewExpense(userId, expenseModel);
+                if (newIncome == true)
+                {
+                    RedirectToAction("Index");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Insufficient balance + allowed minus on account for creating that Expense";
+                    return RedirectToAction("NewExpense");
+                }
 
                 return RedirectToAction("Index");
             }

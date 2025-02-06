@@ -70,9 +70,9 @@ namespace ExpenseTracker.Services
 
             decimal expenseSum = pagedExpenses.Sum(e => e.ExpenseAmount);
 
-            var sources = await _commonMethods.GetSources("income", user.Id, year, month);
-            var years = await _commonMethods.GetYears("income", user.Id, month, source);
-            var months = await _commonMethods.GetMonths("income", user.Id, year, source);
+            var sources = await _commonMethods.GetSources("expense", user.Id, year, month);
+            var years = await _commonMethods.GetYears("expense", user.Id, month, source);
+            var months = await _commonMethods.GetMonths("expense", user.Id, year, source);
 
 
             return new PaginationViewModel

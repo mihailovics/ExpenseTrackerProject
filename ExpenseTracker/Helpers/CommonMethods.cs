@@ -106,7 +106,7 @@ namespace ExpenseTracker.Helpers
                 }
 
                 return await dBContext.Sources
-                     .Where(s => dBContext.Incomes
+                     .Where(s => dBContext.Expenses
                      .Select(i => i.SourceId)
                      .Distinct()
                      .Contains(s.Id))
@@ -114,7 +114,6 @@ namespace ExpenseTracker.Helpers
             }
             
         }
-
         public async Task<List<int>> GetYears(string model, string userId, int? month = null, int? source = null)
         {
             var account = await GetAccountForUserAsync(userId);

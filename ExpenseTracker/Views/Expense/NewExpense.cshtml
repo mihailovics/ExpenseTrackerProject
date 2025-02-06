@@ -5,7 +5,12 @@
 }
 
 <h1 class="text-center">New Expense</h1>
-
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
 <h4 class="text-center">Expense</h4>
 <hr />
 <div class="row">
