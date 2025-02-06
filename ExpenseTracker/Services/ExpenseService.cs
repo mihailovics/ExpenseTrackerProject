@@ -26,7 +26,7 @@ namespace ExpenseTracker.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task DeleteExpense(int id)
+        public async Task<bool> DeleteExpense(int id)
         {
             var Expense = await dBContext.Expenses.FindAsync(id);
 
@@ -34,7 +34,9 @@ namespace ExpenseTracker.Services
             {
                 dBContext.Expenses.Remove(Expense);
                 await dBContext.SaveChangesAsync();
+                return true;
             }
+            else { return false; }  
         }
 
         public async Task<PaginationViewModel> GetPaginatedExpenses(int? year, int? month, int? source, int? PageNumber, int? PageSize)
@@ -104,7 +106,7 @@ namespace ExpenseTracker.Services
             };
         }
 
-        public async Task<bool> NewExpense(string userId, IncomeViewModel expenseModel)
+        public async Task<bool> NewExpense(string userId, ViewModel expenseModel)
         {
             try
             {
@@ -135,7 +137,7 @@ namespace ExpenseTracker.Services
             }
         }
 
-        public async Task<bool> EditExpense(string userId, Expense ExpenseModel, int id)
+        public async Task<bool> EditExpense(string userId, ViewModel ExpenseModel, int id)
         {
             try
             {
@@ -148,9 +150,9 @@ namespace ExpenseTracker.Services
                     return false;
                 }
 
-                Expense.ExpenseAmount = ExpenseModel.ExpenseAmount;
+                Expense.ExpenseAmount = ExpenseModel.Amount;
                 Expense.Description = ExpenseModel.Description;
-                Expense.Source = ExpenseModel.Source;
+                Expense.SourceId = ExpenseModel.SourceId;
                 Expense.AccountId = account.Id;
 
                 await dBContext.SaveChangesAsync();

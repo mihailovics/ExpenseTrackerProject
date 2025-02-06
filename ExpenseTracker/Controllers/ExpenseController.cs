@@ -36,32 +36,16 @@ namespace ExpenseTracker.Controllers
         {
             var userId = _userManager.GetUserId(User);
 
-            PaginationViewModel pagedIncomes = await _expenseService.GetPaginatedExpenses(year, month, source, pageNumber, pageSize);
+            PaginationViewModel pagedExpenses = await _expenseService.GetPaginatedExpenses(year, month, source, pageNumber, pageSize);
 
-            /*PaginationViewModel model = new PaginationViewModel
-            {
-                TotalPages = pagedIncomes.TotalPages,
-                CurrentPage = pagedIncomes.CurrentPage,
-                PageSize = pagedIncomes.PageSize,
-                Balance = pagedIncomes.Balance,
-                Sum = pagedIncomes.Sum,
-                Expenses = pagedIncomes.Expenses,
-                SelectedMonth = month,
-                SelectedSource = source,
-                SelectedYear = year,
-                Months = pagedIncomes.Months,
-                Sources = pagedIncomes.Sources,
-                Years = pagedIncomes.Years,
-            };*/
-
-            return View(pagedIncomes);
+            return View(pagedExpenses);
         }
 
         [HttpGet]
         [Authorize(Roles = "user")]
         public async Task<IActionResult> NewExpense()
         {
-            var viewModel = new IncomeViewModel
+            var viewModel = new ViewModel
             {
                 Sources = (await _commonMethods.ShowSources())
                  .Select(s => new SelectListItem
@@ -75,7 +59,7 @@ namespace ExpenseTracker.Controllers
 
         [HttpPost]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> NewExpense(IncomeViewModel expenseModel)
+        public async Task<IActionResult> NewExpense(ViewModel expenseModel)
         {
             var userId = _userManager.GetUserId(User);
 
@@ -103,21 +87,38 @@ namespace ExpenseTracker.Controllers
         public async Task<IActionResult> Edit(int id)
         { 
             var expense = await _expenseService.FindByid(id);
-            return View(expense);
+            
+            var viewModel = new ViewModel
+            {
+                Amount = expense.ExpenseAmount,
+                Description = expense.Description,
+                AccountId = expense.AccountId,
+                SourceId = expense.SourceId,
+                CreatedAt = expense.CreatedAt,
+                Account = expense.Account,
+                Sources = (await _commonMethods.ShowSources())
+                 .Select(s => new SelectListItem
+                 {
+                     Value = s.Id.ToString(),
+                     Text = s.Name
+                 }).ToList()
+            };
+            return View(viewModel);
         }
 
         [HttpPost]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> EditExpense([FromForm] Expense ExpenseModel, [FromForm] int id)
+        public async Task<IActionResult> EditExpense([FromForm] ViewModel ExpenseModel, [FromForm] int id)
         {
             var userId = _userManager.GetUserId(User);
+
             if (ModelState.IsValid)
             {
                 var newExpense = await _expenseService.EditExpense(userId, ExpenseModel, id);
  
                 if (newExpense == true)
                 {
-                    return RedirectToAction("GetExpenses");
+                    return RedirectToAction("Index");
                 }
                 else
                 {
@@ -143,8 +144,15 @@ namespace ExpenseTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _expenseService.DeleteExpense(id);
-                return RedirectToAction("GetExpenses");
+                var deleted = await _expenseService.DeleteExpense(id);
+                if (deleted == true)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return RedirectToAction("Delete/" + id);
+                }
             }
             else
             {

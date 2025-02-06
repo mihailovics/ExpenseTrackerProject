@@ -94,7 +94,7 @@ namespace ExpenseTracker.Services
             };
         }
 
-        public async Task<bool> NewIncome(string userId, IncomeViewModel incomeModel)
+        public async Task<bool> NewIncome(string userId, ViewModel incomeModel)
         {
             try
             {
@@ -125,30 +125,32 @@ namespace ExpenseTracker.Services
             }
         }
         
-        public async Task DeleteIncome(int id)
+        public async Task<bool> DeleteIncome(int id)
         {
             var income = await dBContext.Incomes.FindAsync(id);
-            if (income != null) 
+            if (income != null)
             {
                 dBContext.Incomes.Remove(income);
                 await dBContext.SaveChangesAsync();
+                return true;
             }
+            else { return false; }
         }
 
-        public async Task<bool> EditIncome(string userId, Income updatedIncome, int id)
+        public async Task<bool> EditIncome(string userId, ViewModel updatedIncome, int id)
         {
             var account = await _commonMethods.GetAccountForUserAsync(userId);
 
             var income = await dBContext.Incomes.FirstOrDefaultAsync(i => i.Id == id && i.AccountId == account.Id);
 
-            if(userId == null)
+            if (userId == null)
             {
                 return false;
             }
 
-            income.IncomeAmount = updatedIncome.IncomeAmount;
+            income.IncomeAmount = updatedIncome.Amount;
             income.Description = updatedIncome.Description;
-            income.Source = updatedIncome.Source;
+            income.SourceId = updatedIncome.SourceId;
             income.AccountId = account.Id;
 
             await dBContext.SaveChangesAsync();

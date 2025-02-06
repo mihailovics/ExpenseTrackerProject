@@ -1,4 +1,4 @@
-﻿@model ExpenseTracker.DTOs.IncomeViewModel
+﻿@model ExpenseTracker.DTOs.ViewModel
 
 @{
     ViewData["Title"] = "NewExpense";
@@ -33,7 +33,6 @@
                     <option value="">-- Select a Source --</option>
                 </select>
                 <span asp-validation-for="SourceId" class="text-danger"></span>
-
             </div>
             <div class="pt-3 form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ExpenseTracker.DTOs
 {
-    public class IncomeViewModel
+    public class ViewModel
     {
         public int Id { get; set; }
 

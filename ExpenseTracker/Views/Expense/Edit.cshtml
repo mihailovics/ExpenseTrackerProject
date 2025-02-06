@@ -1,4 +1,4 @@
-﻿@model ExpenseTracker.Models.Expense
+﻿@model ExpenseTracker.DTOs.ViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -14,16 +14,15 @@
         @TempData["ErrorMessage"]
     </div>
 }
-
 <div class="row">
     <div class="col-md-4">
         <form asp-action="EditExpense" asp-controller="Expense" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="ExpenseAmount" class="control-label"></label>
-                <input asp-for="ExpenseAmount" class="form-control" />
-                <span asp-validation-for="ExpenseAmount" class="text-danger"></span>
+                <label asp-for="Amount" class="control-label"></label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
@@ -31,11 +30,12 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Source" class="control-label"></label>
-                <input asp-for="Source" class="form-control" />
-                <span asp-validation-for="Source" class="text-danger"></span>
+                <label asp-for="SourceId" class="control-label"></label>
+                <select asp-for="SourceId" asp-items="@Model.Sources" class="form-control">
+                    <option value="">-- Select a Source --</option>
+                </select>
+                <span asp-validation-for="SourceId" class="text-danger"></span>
             </div>
-            
             <div class="form-group">
                 <input type="hidden" asp-for="Id" />
                 <input type="submit" value="Save" class="btn btn-primary" />

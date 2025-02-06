@@ -20,14 +20,14 @@ namespace ExpenseTracker.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IIncomeService _incomeService;
-        private readonly ICommonMethods commonMethods;
+        private readonly ICommonMethods _commonMethods;
         private readonly UserManager<User> _userManager;    
 
-        public IncomeController(ILogger<HomeController> logger, IIncomeService incomeService, ICommonMethods CommonMethods, UserManager<User> userManager)
+        public IncomeController(ILogger<HomeController> logger, IIncomeService incomeService, ICommonMethods commonMethods, UserManager<User> userManager)
         {
             _logger = logger;
             _incomeService = incomeService;
-            commonMethods = CommonMethods;
+            _commonMethods = commonMethods;
             _userManager = userManager;
         }
 
@@ -37,34 +37,18 @@ namespace ExpenseTracker.Controllers
         {
             var userId = _userManager.GetUserId(User);
 
-            var pagedIncomes = await _incomeService.GetPaginatedIncomes(year, month, source, pageNumber, pageSize);
+            PaginationViewModel pagedIncomes = await _incomeService.GetPaginatedIncomes(year, month, source, pageNumber, pageSize);
 
-            PaginationViewModel model = new PaginationViewModel
-            {
-                TotalPages = pagedIncomes.TotalPages,
-                CurrentPage = pagedIncomes.CurrentPage,
-                PageSize = pagedIncomes.PageSize,
-                Balance = pagedIncomes.Balance,
-                Sum = pagedIncomes.Sum,
-                Incomes = pagedIncomes.Incomes,
-                SelectedMonth = month,
-                SelectedSource = source,
-                SelectedYear = year,
-                Months = pagedIncomes.Months,
-                Sources = pagedIncomes.Sources,
-                Years = pagedIncomes.Years,
-            };
-
-            return View(model);
+            return View(pagedIncomes);
         }
 
         [HttpGet]
         [Authorize(Roles = "user")]
         public async Task<IActionResult> NewIncome()
         {
-            var viewModel = new IncomeViewModel
+            var viewModel = new ViewModel
             {
-                Sources = (await commonMethods.ShowSources())
+                Sources = (await _commonMethods.ShowSources())
                  .Select(s => new SelectListItem
                  {
                      Value = s.Id.ToString(),
@@ -76,7 +60,7 @@ namespace ExpenseTracker.Controllers
 
         [HttpPost]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> NewIncome(IncomeViewModel incomeModel)
+        public async Task<IActionResult> NewIncome(ViewModel incomeModel)
         {
             var userId = _userManager.GetUserId(User);
             
@@ -84,7 +68,7 @@ namespace ExpenseTracker.Controllers
             {
                 var newIncome = await _incomeService.NewIncome(userId, incomeModel);
 
-                return RedirectToAction("GetIncomes");
+                return RedirectToAction("Index");
             }
             
             return View(incomeModel);
@@ -94,13 +78,29 @@ namespace ExpenseTracker.Controllers
         [Authorize(Roles = "user")]
         public async Task<IActionResult> Edit(int id)
         {
+            //Napraviti metodu getIncomeViewModelById da ne bi pisalo toliko koda
             var income = await _incomeService.FindByid(id);
-            return View(income);
+            var viewModel = new ViewModel
+            {
+                Amount = income.IncomeAmount,
+                Description = income.Description,
+                AccountId = income.AccountId,
+                SourceId = income.SourceId,
+                CreatedAt = income.CreatedAt,
+                Account = income.Account,
+                Sources = (await _commonMethods.ShowSources())
+                 .Select(s => new SelectListItem
+                 {
+                     Value = s.Id.ToString(),
+                     Text = s.Name
+                 }).ToList()
+            };
+            return View(viewModel);
         }
 
         [HttpPost]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> EditIncome([FromForm] Income incomeModel, [FromForm] int id)
+        public async Task<IActionResult> EditIncome([FromForm] ViewModel incomeModel, [FromForm] int id)
         {
             var userId = _userManager.GetUserId(User);
 
@@ -110,7 +110,7 @@ namespace ExpenseTracker.Controllers
 
                 if (newIncome == true)
                 {
-                    return RedirectToAction("GetIncomes");
+                    return RedirectToAction("Index");
                 }
             }
             return RedirectToAction("Edit/" + id);
@@ -130,8 +130,15 @@ namespace ExpenseTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _incomeService.DeleteIncome(id);
-                return RedirectToAction("GetIncomes");
+                var deleted = await _incomeService.DeleteIncome(id);
+                if (deleted == true)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return RedirectToAction("Delete/" + id);
+                }
             }
             else
             {
