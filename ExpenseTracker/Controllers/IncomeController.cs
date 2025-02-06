@@ -45,7 +45,7 @@ namespace ExpenseTracker.Controllers
                 CurrentPage = pagedIncomes.CurrentPage,
                 PageSize = pagedIncomes.PageSize,
                 Balance = pagedIncomes.Balance,
-                IncomeSum = pagedIncomes.IncomeSum,
+                Sum = pagedIncomes.Sum,
                 Incomes = pagedIncomes.Incomes,
                 SelectedMonth = month,
                 SelectedSource = source,

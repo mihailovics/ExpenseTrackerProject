@@ -7,7 +7,7 @@ namespace ExpenseTracker.DTOs
     {
         public int? TotalPages { get; set; }
         public int? CurrentPage { get; set; }
-        public decimal IncomeSum { get; set; }
+        public decimal Sum { get; set; }
         public int? PageSize { get; set; }
         public decimal Balance { get; set; }
 

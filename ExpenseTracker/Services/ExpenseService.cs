@@ -1,9 +1,13 @@
-﻿using ExpenseTracker.Data;
+﻿using Elfie.Serialization;
+using System.Drawing.Printing;
+using ExpenseTracker.Data;
 using ExpenseTracker.DTOs;
 using ExpenseTracker.Helpers;
 using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 
 namespace ExpenseTracker.Services
 {
@@ -12,12 +16,14 @@ namespace ExpenseTracker.Services
         ApplicationDBContext dBContext;
         private readonly UserManager<User> _userManager;
         private readonly ICommonMethods _commonMethods;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ExpenseService(ApplicationDBContext DbContext, UserManager<User> userManager, ICommonMethods commonMethods)
+        public ExpenseService(ApplicationDBContext DbContext, UserManager<User> userManager, ICommonMethods commonMethods, IHttpContextAccessor httpContextAccessor)
         {
             dBContext = DbContext;
             _userManager = userManager;
             _commonMethods = commonMethods;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task DeleteExpense(int id)
@@ -31,78 +37,99 @@ namespace ExpenseTracker.Services
             }
         }
 
-        public async Task<ExpensePaginationDTO> GetPaginatedExpenses(HttpContext httpContext)
+        public async Task<PaginationViewModel> GetPaginatedExpenses(int? year, int? month, int? source, int? PageNumber, int? PageSize)
         {
-            // Pitanje da li treba sve da promenim da ne koristim uopste httpContext
-            var pageNumberString = httpContext.Request.Query["pageNumber"].FirstOrDefault();
-            int pageNumber = string.IsNullOrEmpty(pageNumberString) ? 1 : int.Parse(pageNumberString);
-
-            var pageSizeString = httpContext.Request.Query["pageSize"].FirstOrDefault();
-            int pageSize = string.IsNullOrEmpty(pageSizeString) ? 5 : int.Parse(pageSizeString);
-
-            var years = httpContext.Request.Query["year"].FirstOrDefault();
-            var month = httpContext.Request.Query["month"].FirstOrDefault();
-            var source = httpContext.Request.Query["source"].FirstOrDefault();
-
-            var user = await _userManager.GetUserAsync(httpContext.User);
+            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
             var account = await _commonMethods.GetAccountForUserAsync(user.Id);
 
             IQueryable<Expense> query = dBContext.Expenses.Where(i => i.AccountId == account.Id);
 
-            if (!string.IsNullOrEmpty(years))
+            if (year.HasValue)
             {
-                var yearInt = int.Parse(years);
-                query = query.Where(i => i.CreatedAt.Year == yearInt);
+                query = query.Where(e => e.CreatedAt.Year == year);
             }
 
-            if (!string.IsNullOrEmpty(month))
+            if (month.HasValue)
             {
-                var monthInt = int.Parse(month);
-                query = query.Where(i => i.CreatedAt.Month == monthInt);
+                query = query.Where(e => e.CreatedAt.Month == month);
             }
 
-            if (!string.IsNullOrEmpty(source))
+            if (source.HasValue)
             {
-                var sourceInt = int.Parse(source);
-                query = query.Where(i => i.SourceId == sourceInt);
+                query = query.Where(e => e.SourceId == source);
             }
 
-            int totalExpenses = await query.CountAsync();
-            int totalPages = (int)Math.Ceiling(totalExpenses / (double)pageSize);
+            int pageNumber = PageNumber == null ? 1 : (int)PageNumber;
+            int pageSize = PageSize == null ? 5 : (int)PageSize;
+            int totalIncomes = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalIncomes / (double)pageSize);
             List<Expense> pagedExpenses = await query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((int)((pageNumber - 1) * pageSize))
+                .Take((int)pageSize)
                 .ToListAsync();
 
-            decimal ExpenseSum = pagedExpenses.Sum(i => i.ExpenseAmount);
+            decimal expenseSum = pagedExpenses.Sum(e => e.ExpenseAmount);
 
-            return new ExpensePaginationDTO
+            var sources = await _commonMethods.GetSources("income", user.Id, year, month);
+            var years = await _commonMethods.GetYears("income", user.Id, month, source);
+            var months = await _commonMethods.GetMonths("income", user.Id, year, source);
+
+
+            return new PaginationViewModel
             {
                 TotalPages = totalPages,
                 CurrentPage = pageNumber,
                 Expenses = pagedExpenses,
                 PageSize = pageSize,
                 Balance = account.Balance,
-                ExpenseSum = ExpenseSum
+                Sum = expenseSum,
+                SelectedMonth = month,
+                SelectedSource = source,
+                SelectedYear = year,
+                Years = years.Select(y => new SelectListItem
+                {
+                    Value = y.ToString(),
+                    Text = y.ToString()
+                }).ToList(),
+                Months = months.Select(m => new SelectListItem
+                {
+                    Value = m.ToString(),
+                    Text = m.ToString()
+                }).ToList(),
+                Sources = sources.Select(s => new SelectListItem
+                {
+                    Value = s.Id.ToString(),
+                    Text = s.Name
+                }).ToList(),
             };
         }
 
-        public async Task<bool> NewExpense(string userId, Expense ExpenseModel)
+        public async Task<bool> NewExpense(string userId, IncomeViewModel expenseModel)
         {
             try
             {
                 var account = await _commonMethods.GetAccountForUserAsync(userId);
 
-                ExpenseModel.Account = account;
-                ExpenseModel.AccountId = account.Id;
-                ExpenseModel.CreatedAt = DateTime.Now;
+                var expense = new Expense
+                {
+                    ExpenseAmount = expenseModel.Amount,
+                    Account = account,
+                    AccountId = account.Id,
+                    CreatedAt = DateTime.Now,
+                    Description = expenseModel.Description,
+                    SourceId = expenseModel.SourceId,
+                };
 
-                dBContext.Expenses.Add(ExpenseModel);
+                dBContext.Expenses.Add(expense);
                 await dBContext.SaveChangesAsync();
 
                 return true;
             }
-            catch (DbUpdateException) 
+            catch (SqlException ex)
+            {
+                return false;
+            }
+            catch (Exception ex)
             {
                 return false;
             }

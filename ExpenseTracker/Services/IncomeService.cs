@@ -52,7 +52,7 @@ namespace ExpenseTracker.Services
             int pageNumber = PageNumber==null ? 1 : (int)PageNumber;
             int pageSize = PageSize==null ? 5 : (int)PageSize;
             int totalIncomes = await query.CountAsync();
-            int totalPages = (int)Math.Ceiling((double)(totalIncomes / pageSize));
+            int totalPages = (int)Math.Ceiling(totalIncomes / (double)pageSize);
             List<Income> pagedIncomes = await query
                 .Skip((int)((pageNumber - 1) * pageSize))
                 .Take((int)pageSize)
@@ -72,7 +72,7 @@ namespace ExpenseTracker.Services
                 Incomes = pagedIncomes,
                 PageSize = pageSize,
                 Balance = account.Balance,
-                IncomeSum = incomeSum,
+                Sum = incomeSum,
                 SelectedMonth = month,
                 SelectedSource = source,
                 SelectedYear = year,
@@ -88,8 +88,8 @@ namespace ExpenseTracker.Services
                 }).ToList(),
                 Sources = sources.Select(s => new SelectListItem
                 {
-                    Value = s.ToString(),
-                    Text = s.ToString()
+                    Value = s.Id.ToString(),
+                    Text = s.Name
                 }).ToList(),
             };
         }
@@ -102,7 +102,7 @@ namespace ExpenseTracker.Services
 
                 var income = new Income
                 {
-                    IncomeAmount = incomeModel.IncomeAmount,
+                    IncomeAmount = incomeModel.Amount,
                     Account = account,
                     AccountId = account.Id,
                     CreatedAt = DateTime.Now,

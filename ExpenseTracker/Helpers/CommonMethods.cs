@@ -64,7 +64,7 @@ namespace ExpenseTracker.Helpers
             }
         }
 
-        public async Task<List<int>> GetSources(string model, string userId, int? year = null, int? month = null)
+        public async Task<List<Source>> GetSources(string model, string userId, int? year = null, int? month = null)
         {
             var account = await GetAccountForUserAsync(userId);
 
@@ -83,9 +83,11 @@ namespace ExpenseTracker.Helpers
                     query = query.Where(i => i.CreatedAt.Month == month.Value);
                 }
 
-                return await query
+                return await dBContext.Sources
+                    .Where(s => dBContext.Incomes
                     .Select(i => i.SourceId)
                     .Distinct()
+                    .Contains(s.Id))
                     .ToListAsync();
             }
             else
@@ -103,10 +105,12 @@ namespace ExpenseTracker.Helpers
                     query = query.Where(i => i.CreatedAt.Month == month.Value);
                 }
 
-                return await query
-                    .Select(i => i.SourceId)
-                    .Distinct()
-                    .ToListAsync();
+                return await dBContext.Sources
+                     .Where(s => dBContext.Incomes
+                     .Select(i => i.SourceId)
+                     .Distinct()
+                     .Contains(s.Id))
+                     .ToListAsync();
             }
             
         }

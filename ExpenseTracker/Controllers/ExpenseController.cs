@@ -1,11 +1,14 @@
-﻿using Elfie.Serialization;
+﻿using System.Drawing.Printing;
+using Elfie.Serialization;
 using ExpenseTracker.Data;
+using ExpenseTracker.DTOs;
 using ExpenseTracker.Helpers;
 using ExpenseTracker.Models;
 using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,59 +32,61 @@ namespace ExpenseTracker.Controllers
         // Smisliti nacin kako da pamtim allowedMinus i da ga vracam tamo umesto sve u balance
         [HttpGet]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> Index(int? year = null, int? month = null, int? source = null)
+        public async Task<IActionResult> Index(int? year = null, int? month = null, int? source = null, int? pageNumber = null, int? pageSize = null)
         {
             var userId = _userManager.GetUserId(User);
 
-            var sources = await _commonMethods.GetSources("expense",userId, year, month);
-            var years = await _commonMethods.GetYears("expense",userId, month, source);
-            var months = await _commonMethods.GetMonths("expense",userId, year, source);
-            // Izbaciti slanje httpContexta (koristiti IHttpAccessor u klasi commonmethod)
-            var pagedExpenses = await _expenseService.GetPaginatedExpenses(HttpContext);
-            // ViewModel napraviti umesto 
-            ViewBag.TotalPages = pagedExpenses.TotalPages;
-            ViewBag.CurrentPage = pagedExpenses.CurrentPage;
-            ViewBag.ExpenseSum = pagedExpenses.ExpenseSum;
-            ViewBag.PageSize = pagedExpenses.PageSize;
-            ViewBag.Balance = pagedExpenses.Balance;
-            ViewBag.SelectedYear = year;
-            ViewBag.SelectedMonth = month;
-            ViewBag.SelectedSource = source;
+            var pagedIncomes = await _expenseService.GetPaginatedExpenses(year, month, source, pageNumber, pageSize);
 
-            ViewBag.Sources = sources;
-            ViewBag.Years = years;
-            ViewBag.Months = months;
+            PaginationViewModel model = new PaginationViewModel
+            {
+                TotalPages = pagedIncomes.TotalPages,
+                CurrentPage = pagedIncomes.CurrentPage,
+                PageSize = pagedIncomes.PageSize,
+                Balance = pagedIncomes.Balance,
+                Sum = pagedIncomes.Sum,
+                Expenses = pagedIncomes.Expenses,
+                SelectedMonth = month,
+                SelectedSource = source,
+                SelectedYear = year,
+                Months = pagedIncomes.Months,
+                Sources = pagedIncomes.Sources,
+                Years = pagedIncomes.Years,
+            };
 
-            return View(pagedExpenses.Expenses);
+            return View(model);
         }
 
         [HttpGet]
         [Authorize(Roles = "user")]
-        public IActionResult NewExpense()
+        public async Task<IActionResult> NewExpense()
         {
-            return View();
+            var viewModel = new IncomeViewModel
+            {
+                Sources = (await _commonMethods.ShowSources())
+                 .Select(s => new SelectListItem
+                 {
+                     Value = s.Id.ToString(),
+                     Text = s.Name
+                 }).ToList()
+            };
+            return View(viewModel);
         }
 
         [HttpPost]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> NewExpense(Expense ExpenseModel)
+        public async Task<IActionResult> NewExpense(IncomeViewModel expenseModel)
         {
             var userId = _userManager.GetUserId(User);
 
             if (ModelState.IsValid)
             {
-                var newExpense = await _expenseService.NewExpense(userId, ExpenseModel);
-                if (newExpense == true)
-                {
-                    return RedirectToAction("GetExpenses");
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Insufficient balance + allowed minus on account for creating that Expense";
-                    return RedirectToAction("NewExpense");
-                }
+                var newIncome = await _expenseService.NewExpense(userId, expenseModel);
+
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("GetExpenses");
+
+            return View(expenseModel);
         }
 
         [HttpGet]

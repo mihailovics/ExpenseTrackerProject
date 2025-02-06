@@ -1,7 +1,22 @@
 ﻿@model ExpenseTracker.DTOs.PaginationViewModel
 @{
 }
+@{
+    ViewData["Title"] = "Get Incomes";
+}
 
+<h1 class="text-center">Incomes</h1>
+
+<p>
+    <a asp-action="NewIncome">Add new Income</a>
+
+</p>
+<p class="d-flex justify-content-center">
+    Sum of shown incomes: @Model.Sum
+</p>
+<p class="d-flex justify-content-center">
+    Balance: @Model.Balance
+</p>
 <div class="form-container">
     <h2>Filter Incomes</h2>
     <form id="filterForm" method="get" action="/Income">
