@@ -11,6 +11,8 @@ namespace ExpenseTracker.Services
         Task<bool> EditIncome(string userId, ViewModel updatedIncome, int id);
         Task<bool> DeleteIncome(int id);
         Task<Income> FindByid(int id);
+        Task<List<ChartViewModel>> GetIncomeChartDataAsync();
+        Task<decimal> GetAllIncomeSum();
 
     }
 }

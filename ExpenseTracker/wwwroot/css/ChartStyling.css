@@ -1,0 +1,44 @@
+﻿.charts-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.chart-card {
+    background: #0d1117;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 45%;
+    min-width: 300px;
+    
+}
+
+.chart-card h3 {
+        margin-bottom: 15px;
+        font-size: 18px;
+        font-weight: 600;
+        color: white;
+    }
+
+
+canvas {
+    max-width: 100%;
+    height: auto !important;
+}
+
+
+
+@media (max-width: 768px) {
+    .charts-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .chart-card {
+        width: 90%;
+    }
+}

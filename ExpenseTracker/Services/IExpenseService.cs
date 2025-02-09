@@ -10,5 +10,7 @@ namespace ExpenseTracker.Services
         Task<bool> EditExpense(string userId, ViewModel ExpenseModel, int id);
         Task<bool> DeleteExpense(int id);
         Task<Expense> FindByid(int id);
+        Task<List<ChartViewModel>> GetExpenseChartDataAsync();
+        Task<decimal> GetAllExpenseSum();
     }
 }

@@ -163,5 +163,33 @@ namespace ExpenseTracker.Services
             var income = await dBContext.Incomes.FindAsync(id);
             return income;  
         }
+       
+        public async Task<List<ChartViewModel>> GetIncomeChartDataAsync()
+        {
+            var incomes = await dBContext.Incomes
+            .GroupBy(i => i.SourceId)
+            .Select(g => new ChartViewModel
+            {
+                SourceName = dBContext.Sources
+                               .Where(s => s.Id == g.Key)
+                               .Select(s => s.Name)
+                               .FirstOrDefault(),
+                TotalIncome = g.Sum(i => i.IncomeAmount)
+            })
+            .Where(g => g.SourceName != null)
+            .ToListAsync();
+
+            return incomes;
+        }
+
+        public async Task<decimal> GetAllIncomeSum()
+        {
+            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
+            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
+
+            return dBContext.Incomes
+                .Where(i => i.AccountId == account.Id)
+                .Sum(i => i.IncomeAmount);
+        }
     }
 }

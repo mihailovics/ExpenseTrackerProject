@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using ExpenseTracker.Helpers;
 using ExpenseTracker.Models;
+using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,29 +15,37 @@ namespace ExpenseTracker.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ICommonMethods _commonMethods;
         private readonly UserManager<User> _userManager;
-        public HomeController(ILogger<HomeController> logger, ICommonMethods commonMethods, UserManager<User> userManager)
+        private readonly IIncomeService _incomeService;
+        private readonly IExpenseService _expenseService;
+        public HomeController(ILogger<HomeController> logger, ICommonMethods commonMethods, UserManager<User> userManager,IIncomeService incomeService, IExpenseService expenseService)
         {
             _logger = logger;
             _commonMethods = commonMethods;
             _userManager = userManager;
+            _incomeService = incomeService;
+            _expenseService = expenseService;
         }
 
         public async Task<IActionResult> Index()
         {
-            try 
-            {
-                if (User.Identity.IsAuthenticated)
-                {
-                    var user = await _userManager.GetUserAsync(User);
-                    var account = await _commonMethods.GetAccountForUserAsync(user.Id);
+            var incomeChartData = await _incomeService.GetIncomeChartDataAsync();
+            var expenseChartData = await _expenseService.GetExpenseChartDataAsync();
 
-                    ViewBag.Balance = account.Balance;
-                }
-            }
-            catch (Exception ex) 
-            {
-                return StatusCode(500, "Error: " + ex.Message);
-            }
+            ViewBag.Labels = incomeChartData.Select(c => c.SourceName).ToArray();
+            ViewBag.Data = incomeChartData.Select(c => c.TotalIncome).ToArray();
+            ViewBag.ExpenseLabels = expenseChartData.Select(e => e.SourceName).ToArray();
+            ViewBag.ExpenseData = expenseChartData.Select(e => e.TotalIncome).ToArray();
+
+            decimal totalIncome = await _incomeService.GetAllIncomeSum(); 
+            decimal totalExpense = await _expenseService.GetAllExpenseSum(); 
+            decimal balance = totalIncome - totalExpense;
+            decimal allowedMinus = 500; 
+
+            ViewBag.TotalIncome = totalIncome;
+            ViewBag.TotalExpense = totalExpense;
+            ViewBag.Balance = balance;
+            ViewBag.AllowedMinus = allowedMinus;
+
             return View();
         }
         [Authorize(Roles = "user")]

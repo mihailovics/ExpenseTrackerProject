@@ -170,5 +170,32 @@ namespace ExpenseTracker.Services
             var expense = await dBContext.Expenses.FindAsync(id);
             return expense;
         }
+        public async Task<List<ChartViewModel>> GetExpenseChartDataAsync()
+        {
+            var expenses = await dBContext.Expenses
+            .GroupBy(i => i.SourceId)
+            .Select(g => new ChartViewModel
+            {
+                SourceName = dBContext.Sources
+                               .Where(s => s.Id == g.Key)
+                               .Select(s => s.Name)
+                               .FirstOrDefault(),
+                TotalIncome = g.Sum(i => i.ExpenseAmount)
+            })
+            .Where(g => g.SourceName != null)
+            .ToListAsync();
+
+            return expenses;
+        }
+
+        public async Task<decimal> GetAllExpenseSum()
+        {
+            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
+            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
+
+            return dBContext.Expenses
+                .Where(i => i.AccountId == account.Id)
+                .Sum(i => i.ExpenseAmount);
+        }
     }
 }
