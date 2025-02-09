@@ -96,7 +96,7 @@
     </table>
 
     <nav class="d-flex justify-content-center">
-        <ul class="pagination p">
+        <ul class="pagination">
             <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
                 <a class="page-link" href="/Income?pageNumber=@(Model.CurrentPage - 1)&pageSize=@Model.PageSize&year=@Model.SelectedYear&month=@Model.SelectedMonth&source=@Model.SelectedSource">Previous</a>
             </li>
