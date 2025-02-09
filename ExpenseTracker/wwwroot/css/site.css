@@ -51,10 +51,20 @@ body {
     }
 
     .dashboard-card h2 {
-        font-size: 32px;
+        font-size: 28px;
         font-weight: bold;
         color: #fff;
     }
-.dashboard-button{
+
+.dashboard-button {
     text-decoration: none;
+}
+
+.table {
+    color: white;
+}
+
+.p li{
+    background-color: #0d1117;
+    color: white;
 }
