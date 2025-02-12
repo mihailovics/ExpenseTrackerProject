@@ -6,7 +6,7 @@ using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
+
 
 namespace ExpenseTracker.Controllers
 {
@@ -18,7 +18,8 @@ namespace ExpenseTracker.Controllers
         private readonly IIncomeService _incomeService;
         private readonly IExpenseService _expenseService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public HomeController(ILogger<HomeController> logger, ICommonMethods commonMethods, UserManager<User> userManager,IIncomeService incomeService, IExpenseService expenseService, IHttpContextAccessor httpContextAccessor)
+        public HomeController(ILogger<HomeController> logger, ICommonMethods commonMethods, UserManager<User> userManager,
+            IIncomeService incomeService, IExpenseService expenseService, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _commonMethods = commonMethods;
@@ -30,6 +31,7 @@ namespace ExpenseTracker.Controllers
 
         public async Task<IActionResult> Index()
         {
+            // Napraviti GetUser u accountServices
             var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
             if (user != null)
             {
@@ -53,10 +55,11 @@ namespace ExpenseTracker.Controllers
             }
             else
             {
-                return Redirect("/Identity/Account/Register");
+                return Redirect("/Identity/Account/Login");
             }
             return View();
         }
+
         [Authorize(Roles = "user")]
         public IActionResult Privacy()
         {

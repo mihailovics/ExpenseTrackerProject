@@ -17,7 +17,7 @@
         <div class="dashboard-card bg-red-500/20 border border-red-400">
             <a class="dashboard-button" href="/Expense">
                 <h5>Total Expense</h5>
-                <h2>€ @ViewBag.TotalExpense.ToString("N2")</h2>
+                <h2>- € @ViewBag.TotalExpense.ToString("N2")</h2>
             </a>
         </div>
         
@@ -37,7 +37,7 @@
     </div>
     <div class="charts-container">
         <div class="chart-card col-lg-3">
-            <h3>Income by Source</h3>
+            <h3>Incomes by Source</h3>
             <canvas id="incomeChart"></canvas>
         </div>
 

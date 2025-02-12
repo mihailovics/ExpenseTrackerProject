@@ -46,6 +46,7 @@ namespace ExpenseTracker.Controllers
         [Authorize(Roles = "user")]
         public async Task<IActionResult> NewIncome()
         {
+            // Ovo mora biti u service-u
             var viewModel = new ViewModel
             {
                 Sources = (await _commonMethods.ShowSources())

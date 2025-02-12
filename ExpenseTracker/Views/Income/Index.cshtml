@@ -6,17 +6,14 @@
 }
 
 <h1 class="text-center">Incomes</h1>
-
-<p>
-    <a asp-action="NewIncome">Add new Income</a>
-
-</p>
-<p class="d-flex justify-content-center">
-    Sum of shown incomes: @Model.Sum
-</p>
-<p class="d-flex justify-content-center">
-    Balance: @Model.Balance
-</p>
+<div class="row">
+    <div class="col">
+        <a class="a-button btn btn-primary float-start" asp-action="NewIncome">Add new </a>
+    </div>
+    <div class="col text-end">
+        <a class="a-button btn btn-secondary" asp-controller="Home" asp-action="Index">Back</a>
+    </div>
+</div>
 <div class="form-container">
     <h2>Filter Incomes</h2>
     <form id="filterForm" method="get" action="/Income">
@@ -95,7 +92,7 @@
         </tbody>
     </table>
 
-    <nav class="d-flex justify-content-center">
+    <nav class="d-flex justify-content-center pp">
         <ul class="pagination">
             <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
                 <a class="page-link" href="/Income?pageNumber=@(Model.CurrentPage - 1)&pageSize=@Model.PageSize&year=@Model.SelectedYear&month=@Model.SelectedMonth&source=@Model.SelectedSource">Previous</a>
