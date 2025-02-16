@@ -45,6 +45,7 @@ namespace ExpenseTracker.Controllers
 
                 decimal totalIncome = await _incomeService.GetAllIncomeSum();
                 decimal totalExpense = await _expenseService.GetAllExpenseSum();
+                // Treba izmeniti ovo u servisu treba izvuci balance iz accounta
                 decimal balance = totalIncome - totalExpense;
                 decimal allowedMinus = 500;
 

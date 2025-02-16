@@ -106,7 +106,7 @@ namespace ExpenseTracker.Services
             };
         }
 
-        public async Task<bool> NewExpense(string userId, ViewModel expenseModel)
+        public async Task<bool> NewExpense(string userId, GeneralViewModel expenseModel)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace ExpenseTracker.Services
             }
         }
 
-        public async Task<bool> EditExpense(string userId, ViewModel ExpenseModel, int id)
+        public async Task<bool> EditExpense(string userId, GeneralViewModel ExpenseModel, int id)
         {
             try
             {
@@ -196,6 +196,21 @@ namespace ExpenseTracker.Services
             return dBContext.Expenses
                 .Where(i => i.AccountId == account.Id)
                 .Sum(i => i.ExpenseAmount);
+        }
+        // A mogao sam napraviti i u common methods univerzalnu, ako ima potrebe napravicemo
+        public async Task<GeneralViewModel> NewExpenseView()
+        {
+            var viewModel = new GeneralViewModel
+            {
+                Sources = (await _commonMethods.ShowSources())
+                .Select(s => new SelectListItem
+                {
+                    Value = s.Id.ToString(),
+                    Text = s.Name
+                }).ToList()
+            };
+
+            return viewModel;
         }
     }
 }

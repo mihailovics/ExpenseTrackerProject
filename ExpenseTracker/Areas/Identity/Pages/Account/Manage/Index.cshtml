@@ -12,11 +12,11 @@
         <form id="profile-form" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
+                <span class="form-control">@Model.Username</span>
                 <label asp-for="Username" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Balance" class="form-control" placeholder="Please enter balance" disabled/>
+                <span class="form-control">@Model.Input.Balance</span>
                 <label asp-for="Input.Balance" class="form-label"></label>
                 <span asp-validation-for="Input.Balance" class="text-danger"></span>
             </div>

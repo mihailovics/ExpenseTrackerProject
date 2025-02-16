@@ -46,22 +46,14 @@ namespace ExpenseTracker.Controllers
         [Authorize(Roles = "user")]
         public async Task<IActionResult> NewIncome()
         {
-            // Ovo mora biti u service-u
-            var viewModel = new ViewModel
-            {
-                Sources = (await _commonMethods.ShowSources())
-                 .Select(s => new SelectListItem
-                 {
-                     Value = s.Id.ToString(),
-                     Text = s.Name
-                 }).ToList()
-            };
+            var viewModel = await _incomeService.NewIncomeView();
+
             return View(viewModel);
         }
 
         [HttpPost]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> NewIncome(ViewModel incomeModel)
+        public async Task<IActionResult> NewIncome(GeneralViewModel incomeModel)
         {
             var userId = _userManager.GetUserId(User);
             
@@ -79,29 +71,17 @@ namespace ExpenseTracker.Controllers
         [Authorize(Roles = "user")]
         public async Task<IActionResult> Edit(int id)
         {
-            //Napraviti metodu getIncomeViewModelById da ne bi pisalo toliko koda
             var income = await _incomeService.FindByid(id);
-            var viewModel = new ViewModel
-            {
-                Amount = income.IncomeAmount,
-                Description = income.Description,
-                AccountId = income.AccountId,
-                SourceId = income.SourceId,
-                CreatedAt = income.CreatedAt,
-                Account = income.Account,
-                Sources = (await _commonMethods.ShowSources())
-                 .Select(s => new SelectListItem
-                 {
-                     Value = s.Id.ToString(),
-                     Text = s.Name
-                 }).ToList()
-            };
+
+            var viewModel = await _commonMethods.ConvertIncomeToGeneral(income);
+        
             return View(viewModel);
         }
 
+
         [HttpPost]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> EditIncome([FromForm] ViewModel incomeModel, [FromForm] int id)
+        public async Task<IActionResult> EditIncome([FromForm] GeneralViewModel incomeModel, [FromForm] int id)
         {
             var userId = _userManager.GetUserId(User);
 

@@ -94,7 +94,7 @@ namespace ExpenseTracker.Services
             };
         }
 
-        public async Task<bool> NewIncome(string userId, ViewModel incomeModel)
+        public async Task<bool> NewIncome(string userId, GeneralViewModel incomeModel)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace ExpenseTracker.Services
             else { return false; }
         }
 
-        public async Task<bool> EditIncome(string userId, ViewModel updatedIncome, int id)
+        public async Task<bool> EditIncome(string userId, GeneralViewModel updatedIncome, int id)
         {
             var account = await _commonMethods.GetAccountForUserAsync(userId);
 
@@ -190,6 +190,20 @@ namespace ExpenseTracker.Services
             return dBContext.Incomes
                 .Where(i => i.AccountId == account.Id)
                 .Sum(i => i.IncomeAmount);
+        }
+        public async Task<GeneralViewModel> NewIncomeView()
+        {
+            var viewModel = new GeneralViewModel
+            {
+                Sources = (await _commonMethods.ShowSources())
+                 .Select(s => new SelectListItem
+                 {
+                     Value = s.Id.ToString(),
+                     Text = s.Name
+                 }).ToList()
+            };
+
+            return viewModel;
         }
     }
 }

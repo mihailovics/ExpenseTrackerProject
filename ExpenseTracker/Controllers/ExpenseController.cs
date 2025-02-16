@@ -45,21 +45,14 @@ namespace ExpenseTracker.Controllers
         [Authorize(Roles = "user")]
         public async Task<IActionResult> NewExpense()
         {
-            var viewModel = new ViewModel
-            {
-                Sources = (await _commonMethods.ShowSources())
-                 .Select(s => new SelectListItem
-                 {
-                     Value = s.Id.ToString(),
-                     Text = s.Name
-                 }).ToList()
-            };
+            var viewModel = await _expenseService.NewExpenseView();
+
             return View(viewModel);
         }
 
         [HttpPost]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> NewExpense(ViewModel expenseModel)
+        public async Task<IActionResult> NewExpense(GeneralViewModel expenseModel)
         {
             var userId = _userManager.GetUserId(User);
 
@@ -87,28 +80,15 @@ namespace ExpenseTracker.Controllers
         public async Task<IActionResult> Edit(int id)
         { 
             var expense = await _expenseService.FindByid(id);
-            
-            var viewModel = new ViewModel
-            {
-                Amount = expense.ExpenseAmount,
-                Description = expense.Description,
-                AccountId = expense.AccountId,
-                SourceId = expense.SourceId,
-                CreatedAt = expense.CreatedAt,
-                Account = expense.Account,
-                Sources = (await _commonMethods.ShowSources())
-                 .Select(s => new SelectListItem
-                 {
-                     Value = s.Id.ToString(),
-                     Text = s.Name
-                 }).ToList()
-            };
+
+            var viewModel = await _commonMethods.ConvertExpenseToGeneral(expense);
+
             return View(viewModel);
         }
 
         [HttpPost]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> EditExpense([FromForm] ViewModel ExpenseModel, [FromForm] int id)
+        public async Task<IActionResult> EditExpense([FromForm] GeneralViewModel ExpenseModel, [FromForm] int id)
         {
             var userId = _userManager.GetUserId(User);
 

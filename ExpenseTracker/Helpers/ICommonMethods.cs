@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Models;
+﻿using ExpenseTracker.DTOs;
+using ExpenseTracker.Models;
 
 namespace ExpenseTracker.Helpers
 {
@@ -9,5 +10,7 @@ namespace ExpenseTracker.Helpers
         Task<List<Source>> GetSources(string model, string userId, int? year = null, int? month = null);
         Task<Account> GetAccountForUserAsync(string userId);
         Task<List<Source>> ShowSources();
+        Task<GeneralViewModel> ConvertIncomeToGeneral(Income IncomeModel);
+        Task<GeneralViewModel> ConvertExpenseToGeneral(Expense ExpenseModel);
     }
 }

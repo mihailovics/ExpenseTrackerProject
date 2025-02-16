@@ -1,8 +1,13 @@
 ﻿
 using ExpenseTracker.Data;
+using ExpenseTracker.DTOs;
 using ExpenseTracker.Models;
+using ExpenseTracker.Services;
+using Humanizer.Localisation;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration.UserSecrets;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -171,6 +176,33 @@ namespace ExpenseTracker.Helpers
         public async Task<List<Source>> ShowSources()
         {
             return await dBContext.Sources.ToListAsync();
+        }
+
+      
+        public async Task<GeneralViewModel> ConvertIncomeToGeneral(Income IncomeModel)
+        {
+            var getSources = (await ShowSources())
+                  .Select(s => new SelectListItem
+                  {
+                      Value = s.Id.ToString(),
+                      Text = s.Name
+                  }).ToList();
+
+            return new GeneralViewModel(IncomeModel.IncomeAmount, IncomeModel.Description, IncomeModel.SourceId, getSources,
+                  IncomeModel.CreatedAt, IncomeModel.AccountId, IncomeModel.Account);
+        }
+
+        public async Task<GeneralViewModel> ConvertExpenseToGeneral(Expense ExpenseModel)
+        {
+            var getSources = (await ShowSources())
+                  .Select(s => new SelectListItem
+                  {
+                      Value = s.Id.ToString(),
+                      Text = s.Name
+                  }).ToList();
+
+            return new GeneralViewModel(ExpenseModel.ExpenseAmount, ExpenseModel.Description, ExpenseModel.SourceId, getSources,
+                    ExpenseModel.CreatedAt, ExpenseModel.AccountId, ExpenseModel.Account);
         }
     }
 }
