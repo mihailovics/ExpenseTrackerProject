@@ -7,9 +7,11 @@
 <ul class="navbar-nav" id="accstyle">
 @if (SignInManager.IsSignedIn(User))
 {
+    var user = await UserManager.GetUserAsync(User); 
+    var username = user?.UserName ?? "User"; 
 
     <li class="nav-item dropdown" data-bs-display="static">
-        <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">User</a>
+        <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">Hello, @username</a>
             <ul class="dropdown-menu" id="dropdownCustom">
                 <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index"><span class="zoom-in">Account</span></a></li>
             <li><hr class="dropdown-divider" /></li>

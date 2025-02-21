@@ -1,7 +1,7 @@
 ﻿using ExpenseTracker.DTOs;
 using ExpenseTracker.Models;
 
-namespace ExpenseTracker.Services
+namespace ExpenseTracker.Services.Interfaces
 {
     public interface IExpenseService
     {

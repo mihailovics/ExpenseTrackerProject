@@ -3,7 +3,7 @@ using ExpenseTracker.Data;
 using ExpenseTracker.DTOs;
 using ExpenseTracker.Helpers;
 using ExpenseTracker.Models;
-using ExpenseTracker.Services;
+using ExpenseTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;

@@ -2,7 +2,7 @@
 using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ExpenseTracker.Services
+namespace ExpenseTracker.Services.Interfaces
 {
     public interface IIncomeService
     {

@@ -71,3 +71,11 @@
         grid-template-columns: 1fr;
     }
 }
+
+#filterForm select {
+    cursor: pointer;
+}
+
+select:focus option:focus {
+    background-color: rgba(0, 255, 255, 0.3) !important;
+}

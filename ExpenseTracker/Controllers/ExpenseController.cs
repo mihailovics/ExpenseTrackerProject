@@ -4,7 +4,7 @@ using ExpenseTracker.Data;
 using ExpenseTracker.DTOs;
 using ExpenseTracker.Helpers;
 using ExpenseTracker.Models;
-using ExpenseTracker.Services;
+using ExpenseTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -65,6 +65,7 @@ namespace ExpenseTracker.Controllers
                 }
                 else
                 {
+                    //Promeniti poruku malo je nejasna
                     TempData["ErrorMessage"] = "Insufficient balance + allowed minus on account for creating that Expense";
                     return RedirectToAction("NewExpense");
                 }
