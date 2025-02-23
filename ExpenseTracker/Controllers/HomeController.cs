@@ -1,3 +1,4 @@
+using System.Data;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using ExpenseTracker.Helpers;
@@ -12,55 +13,26 @@ namespace ExpenseTracker.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly ICommonMethods _commonMethods;
-        private readonly UserManager<User> _userManager;
-        private readonly IIncomeService _incomeService;
-        private readonly IExpenseService _expenseService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAccountService _accountService;
-        public HomeController(ILogger<HomeController> logger, ICommonMethods commonMethods, UserManager<User> userManager,
-            IIncomeService incomeService, IExpenseService expenseService, IHttpContextAccessor httpContextAccessor, IAccountService accountService)
+        private readonly IHomeService _homeService;
+        public HomeController(IAccountService accountService, IHomeService homeService)
         {
-            _logger = logger;
-            _commonMethods = commonMethods;
-            _userManager = userManager;
-            _incomeService = incomeService;
-            _expenseService = expenseService;
-            _httpContextAccessor = httpContextAccessor;
             _accountService = accountService;
+            _homeService = homeService;
         }
 
         public async Task<IActionResult> Index()
         {
-            // Napraviti GetUser u accountServices
             var user = await _accountService.GetUserAsync();
             if (user != null)
-            {
-                var incomeChartData = await _incomeService.GetIncomeChartDataAsync();
-                var expenseChartData = await _expenseService.GetExpenseChartDataAsync();
-
-                ViewBag.Labels = incomeChartData.Select(c => c.SourceName).ToArray();
-                ViewBag.Data = incomeChartData.Select(c => c.TotalAmount).ToArray();
-                ViewBag.ExpenseLabels = expenseChartData.Select(e => e.SourceName).ToArray();
-                ViewBag.ExpenseData = expenseChartData.Select(e => e.TotalAmount).ToArray();
-
-                decimal totalIncome = await _incomeService.GetAllIncomeSum();
-                decimal totalExpense = await _expenseService.GetAllExpenseSum();
-                // Treba izmeniti ovo u servisu treba izvuci balance iz accounta
-                decimal balance = totalIncome - totalExpense;
-                decimal allowedMinus = 500;
-
-                ViewBag.TotalIncome = totalIncome;
-                ViewBag.TotalExpense = totalExpense;
-                ViewBag.Balance = balance;
-                ViewBag.AllowedMinus = allowedMinus;
+            {  
+                var homeModel = await _homeService.GetHomeViewAsync();
+                return View(homeModel);
             }
             else
             {
                 return Redirect("/Identity/Account/Login");
             }
-            return View();
         }
 
         [Authorize(Roles = "user")]
