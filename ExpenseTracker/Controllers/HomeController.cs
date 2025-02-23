@@ -18,8 +18,9 @@ namespace ExpenseTracker.Controllers
         private readonly IIncomeService _incomeService;
         private readonly IExpenseService _expenseService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAccountService _accountService;
         public HomeController(ILogger<HomeController> logger, ICommonMethods commonMethods, UserManager<User> userManager,
-            IIncomeService incomeService, IExpenseService expenseService, IHttpContextAccessor httpContextAccessor)
+            IIncomeService incomeService, IExpenseService expenseService, IHttpContextAccessor httpContextAccessor, IAccountService accountService)
         {
             _logger = logger;
             _commonMethods = commonMethods;
@@ -27,21 +28,22 @@ namespace ExpenseTracker.Controllers
             _incomeService = incomeService;
             _expenseService = expenseService;
             _httpContextAccessor = httpContextAccessor;
+            _accountService = accountService;
         }
 
         public async Task<IActionResult> Index()
         {
             // Napraviti GetUser u accountServices
-            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
+            var user = await _accountService.GetUserAsync();
             if (user != null)
             {
                 var incomeChartData = await _incomeService.GetIncomeChartDataAsync();
                 var expenseChartData = await _expenseService.GetExpenseChartDataAsync();
 
                 ViewBag.Labels = incomeChartData.Select(c => c.SourceName).ToArray();
-                ViewBag.Data = incomeChartData.Select(c => c.TotalIncome).ToArray();
+                ViewBag.Data = incomeChartData.Select(c => c.TotalAmount).ToArray();
                 ViewBag.ExpenseLabels = expenseChartData.Select(e => e.SourceName).ToArray();
-                ViewBag.ExpenseData = expenseChartData.Select(e => e.TotalIncome).ToArray();
+                ViewBag.ExpenseData = expenseChartData.Select(e => e.TotalAmount).ToArray();
 
                 decimal totalIncome = await _incomeService.GetAllIncomeSum();
                 decimal totalExpense = await _expenseService.GetAllExpenseSum();

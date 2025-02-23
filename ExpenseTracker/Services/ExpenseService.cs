@@ -173,7 +173,11 @@ namespace ExpenseTracker.Services
         }
         public async Task<List<ChartViewModel>> GetExpenseChartDataAsync()
         {
+            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
+            var account = await _commonMethods.GetAccountForUserAsync(user.Id);
+
             var expenses = await dBContext.Expenses
+            .Where(i => i.AccountId == account.Id)
             .GroupBy(i => i.SourceId)
             .Select(g => new ChartViewModel
             {
@@ -181,7 +185,7 @@ namespace ExpenseTracker.Services
                                .Where(s => s.Id == g.Key)
                                .Select(s => s.Name)
                                .FirstOrDefault(),
-                TotalIncome = g.Sum(i => i.ExpenseAmount)
+                TotalAmount = g.Sum(i => i.ExpenseAmount)
             })
             .Where(g => g.SourceName != null)
             .ToListAsync();

@@ -17,6 +17,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IIncomeService, IncomeService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<ICommonMethods, CommonMethods>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IHomeService, HomeService>();
 
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
