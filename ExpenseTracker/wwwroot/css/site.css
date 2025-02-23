@@ -21,7 +21,6 @@ html {
    padding-right:100px;
 }
 
-
 body {
     margin-bottom: 60px;
     background-color: #0d1117;
@@ -96,11 +95,11 @@ body {
         color: white !important;
     }
 
-
 .pagination {
     border-color: rgba(0, 255, 255, 0.3) !important;
     box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.3);
 }
+
 .page-item a {
      background-color: #0d1117 !important;
      color:white;
@@ -116,6 +115,7 @@ body {
     box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.3);
 
 }
+
 .page-item a:hover {
     color: white !important;
     border-color: rgba(0, 255, 255, 0.3) !important;
@@ -229,15 +229,53 @@ body {
         color: #0d1117;
     }
 
-.form-buttonBack{
+.form-buttonBack {
     margin-top:15px !important;
 }
 
-.form-buttonBack a{
+.form-buttonBack a {
     color: white !important;
     text-decoration: none;
 
 }
-#registerForm{
+
+#registerForm {
     padding: 12px;
+}
+
+.login-form {
+    padding: 12px !important;
+}
+
+#login-submit {
+    background-color: rgba(0, 255, 255, 0.3) !important;
+    border-color: rgba(0, 255, 255, 0.3) !important;
+    box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.3);
+}
+
+#login-submit:hover {
+    background-color: #0d1117 !important;
+}
+
+.validation-summary-errors ul {
+    list-style: none; 
+    padding: 0;
+    padding-bottom: 10px; 
+    margin: 0 auto;  
+    text-align: center; 
+    display: block; 
+    width: fit-content; 
+}
+
+.validation-summary-errors ul li {
+    text-align: center;
+    width: 100% !important;
+}
+
+input:-webkit-autofill {
+    background-color: #0d1117 !important;
+    -webkit-box-shadow: 0 0 0px 1000px #0d1117 inset !important;
+    box-shadow: 0 0 0px 1000px #0d1117 inset !important;
+    color: white !important; 
+    -webkit-text-fill-color: white !important; 
 }
