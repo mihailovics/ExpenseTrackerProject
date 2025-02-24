@@ -33,7 +33,7 @@ namespace ExpenseTracker.Services
             var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
             var account = await _commonMethods.GetAccountForUserAsync(user.Id);
 
-            IQueryable<Income> query = dBContext.Incomes.Where(i => i.AccountId == account.Id);
+            IQueryable<Income> query = dBContext.Incomes.Where(i => i.AccountId == account.Id).OrderDescending();
 
             if (year.HasValue)
             {

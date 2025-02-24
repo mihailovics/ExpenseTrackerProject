@@ -6,6 +6,7 @@ namespace ExpenseTracker.Services.Interfaces
     {
         Task<User> GetUserAsync();
         Task<decimal> GetAllowedMinusAsync();
+        Task<decimal> GetBalanceAsync();
         Task<Account> GetAccountForUserAsync(string userId);
 
     }

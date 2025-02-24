@@ -22,6 +22,7 @@ namespace ExpenseTracker.DTOs
         public int Id { get; set; }
 
         [Required]
+        [Range(1, 999999999, ErrorMessage = "Amount must be greater than 1")]
         public decimal Amount { get; set; }
 
         public string? Description { get; set; }
@@ -29,6 +30,7 @@ namespace ExpenseTracker.DTOs
         [Required]
         [Display(Name = "Source")]
         public int SourceId { get; set; }  
+        // Zbog ovoga sam presao na generalViewModel
         public List<SelectListItem>? Sources { get; set; }  
 
         [Required]

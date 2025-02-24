@@ -89,7 +89,7 @@ namespace ExpenseTracker.Helpers
                 }
 
                 return await dBContext.Sources
-                    .Where(s => dBContext.Incomes
+                    .Where(s => query
                     .Select(i => i.SourceId)
                     .Distinct()
                     .Contains(s.Id))
@@ -111,7 +111,7 @@ namespace ExpenseTracker.Helpers
                 }
 
                 return await dBContext.Sources
-                     .Where(s => dBContext.Expenses
+                     .Where(s => query
                      .Select(i => i.SourceId)
                      .Distinct()
                      .Contains(s.Id))

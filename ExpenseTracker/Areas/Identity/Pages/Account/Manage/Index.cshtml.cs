@@ -126,7 +126,6 @@ namespace ExpenseTracker.Areas.Identity.Pages.Account.Manage
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             
             var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-            account.Balance = Input.Balance;
             account.AllowedMinus = Input.AllowedMinus;
             user.PhoneNumber = Input.PhoneNumber;
 

@@ -66,7 +66,7 @@ namespace ExpenseTracker.Controllers
                 else
                 {
                     //Promeniti poruku malo je nejasna
-                    TempData["ErrorMessage"] = "Insufficient balance + allowed minus on account for creating that Expense";
+                    TempData["ErrorMessage"] = "You don’t have enough funds to cover this expense, even with your allowed minus.";
                     return RedirectToAction("NewExpense");
                 }
 

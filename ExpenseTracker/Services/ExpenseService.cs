@@ -45,7 +45,7 @@ namespace ExpenseTracker.Services
             var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
             var account = await _commonMethods.GetAccountForUserAsync(user.Id);
 
-            IQueryable<Expense> query = dBContext.Expenses.Where(i => i.AccountId == account.Id);
+            IQueryable<Expense> query = dBContext.Expenses.Where(i => i.AccountId == account.Id).OrderDescending();
 
             if (year.HasValue)
             {
@@ -113,6 +113,15 @@ namespace ExpenseTracker.Services
             {
                 var account = await _commonMethods.GetAccountForUserAsync(userId);
 
+                decimal takenFromAllowedMinus = 0;
+                decimal remainingExpense = expenseModel.Amount;
+
+                if (account.Balance < expenseModel.Amount)
+                {
+                    takenFromAllowedMinus = expenseModel.Amount - account.Balance;
+                    remainingExpense = account.Balance; 
+                }
+
                 var expense = new Expense
                 {
                     ExpenseAmount = expenseModel.Amount,
@@ -121,6 +130,7 @@ namespace ExpenseTracker.Services
                     CreatedAt = DateTime.Now,
                     Description = expenseModel.Description,
                     SourceId = expenseModel.SourceId,
+                    TakenFromAllowedMinus = takenFromAllowedMinus,
                 };
 
                 dBContext.Expenses.Add(expense);
@@ -137,7 +147,7 @@ namespace ExpenseTracker.Services
                 return false;
             }
         }
-
+        // Promeniti iz triggera u kod
         public async Task<bool> EditExpense(string userId, GeneralViewModel ExpenseModel, int id)
         {
             try

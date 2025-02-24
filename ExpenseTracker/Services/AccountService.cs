@@ -35,6 +35,14 @@ namespace ExpenseTracker.Services
             return account.AllowedMinus;
         }
 
+        public async Task<decimal> GetBalanceAsync()
+        {
+            var user = await GetUserAsync();
+            var account = await GetAccountForUserAsync(user.Id);
+
+            return account.Balance;
+        }
+
         public async Task<User> GetUserAsync()
         {
             try

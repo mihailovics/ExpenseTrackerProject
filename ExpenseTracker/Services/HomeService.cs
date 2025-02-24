@@ -31,7 +31,7 @@ namespace ExpenseTracker.Services
                 ExpenseData = expenseChartData.Select(c => c.TotalAmount).ToList(),
                 TotalIncome = totalIncome,
                 TotalExpense = totalExpense,
-                Balance = totalIncome - totalExpense,
+                Balance = await _accountService.GetBalanceAsync(),
                 AllowedMinus = await _accountService.GetAllowedMinusAsync()
             };
         }
