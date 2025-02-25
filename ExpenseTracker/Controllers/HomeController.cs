@@ -24,9 +24,11 @@ namespace ExpenseTracker.Controllers
         public async Task<IActionResult> Index()
         {
             var user = await _accountService.GetUserAsync();
+
             if (user != null)
             {  
                 var homeModel = await _homeService.GetHomeViewAsync();
+
                 return View(homeModel);
             }
             else

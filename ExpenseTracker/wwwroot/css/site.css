@@ -21,6 +21,10 @@ html {
    padding-right:100px;
 }
 
+    #accstyle ul li a:hover {
+        text-shadow: 0px 0px 10px rgba(0, 255, 255, 0.5);
+    }
+
 body {
     margin-bottom: 60px;
     background-color: #0d1117;
@@ -282,4 +286,47 @@ input:-webkit-autofill {
     box-shadow: 0 0 0px 1000px #0d1117 inset !important;
     color: white !important; 
     -webkit-text-fill-color: white !important; 
+}
+
+header{
+    position: relative;
+    z-index: 999999;
+}
+
+.navbar-toggler-icon {
+    /* SVG je zato koristimo invert, color ne radi jer je slika*/
+    filter: invert(1);
+}
+
+.navbar-toggler {
+    border-color: white !important;
+}
+
+@media (max-width: 768px) {
+    .navbar-collapse {
+        display: none !important;
+    }
+
+        .navbar-collapse.show {
+            display: flex !important;
+            flex-direction: column;
+            width: 100%;
+            text-align: center;
+        }
+
+    .navbar-nav {
+        flex-direction: column !important;
+    }
+
+    .navbar-toggler {
+        display: block !important;
+    }
+
+    #accstyle{
+        padding: 0 !important;
+    }
+    
+    #accstyle ul li {
+        text-align:center;
+    }
 }
