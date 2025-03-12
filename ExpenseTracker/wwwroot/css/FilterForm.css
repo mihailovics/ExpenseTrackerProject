@@ -1,0 +1,81 @@
+﻿.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.3);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #0d1117;
+    margin-bottom:40px;
+    margin-top: 50px;
+}
+
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: white;
+}
+
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 4px;
+    font-size: 16px;
+    color: white;
+    background-color: #0d1117;
+    transition: border-color 0.1s ease;
+    text-align:center;
+}
+
+    .form-control:focus {
+        border-color: rgba(0, 255, 255, 0.3);
+        outline: none;
+        box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.3);
+        background-color: #0d1117;
+    }
+
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: white;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+
+}
+    .filter-grid select {
+        outline: none;
+        background-color: transparent;
+    }
+        .filter-grid select option {
+            background-color: #0d1117;
+            color:white;
+        }
+        .filter-grid select option:focus {
+            background-color: white;
+        }
+
+@media (max-width: 768px) {
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+#filterForm select {
+    cursor: pointer;
+}
+
+select:focus option:focus {
+    background-color: rgba(0, 255, 255, 0.3) !important;
+}

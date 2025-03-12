@@ -1,5 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+
 html {
-  font-size: 14px;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -12,11 +17,316 @@ html {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+#accstyle{
+   padding-right:100px;
 }
 
+    #accstyle ul li a:hover {
+        text-shadow: 0px 0px 10px rgba(0, 255, 255, 0.5);
+    }
+
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: #0d1117;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.dashboard-card {
+    padding: 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.3);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .dashboard-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 6px 15px rgba(0, 255, 255, 0.5);
+    }
+
+    .dashboard-card h5 {
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #aaa;
+    }
+
+    .dashboard-card h2 {
+        font-size: 28px;
+        font-weight: bold;
+        color: #fff;
+    }
+
+.dashboard-button {
+    text-decoration: none;
+}
+
+.table {
+    color: white;
+}
+
+.p li{
+    background-color: #0d1117;
+    color: white;
+}
+
+#customNav {
+    background-color: #0d1117 !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.3);
+    text-align: center;
+    transition: transform 0.5s ease, box-shadow 0.3s ease;
+}
+
+#customNav a {
+    color:white !important;
+}
+    #customNav a:hover {
+        transform: scale(1.1);
+    }
+
+.valid {
+    background-color: #0d1117 !important;
+}
+
+.form-control {
+    color: white !important;
+}
+    .form-control:-webkit-autofill {
+        background-color: #0d1117 !important;
+        color: white !important;
+    }
+
+.pagination {
+    border-color: rgba(0, 255, 255, 0.3) !important;
+    box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.3);
+}
+
+.page-item a {
+     background-color: #0d1117 !important;
+     color:white;
+}
+
+.page-item.active .page-link {
+    border-color: white !important;
+    box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.3);
+    background-color: white !important;
+    color: #0d1117;
+}
+.page-item.active a:hover{
+    color: #0d1117 !important;
+}
+
+.page-item.disabled .page-link {
+    border-color: white !important;
+    box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.3);
+
+}
+
+.page-item a:hover {
+    color: white !important;
+    box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.5);
+}
+
+#dropdownCustom {
+    background-color: #0d1117 !important;
+    border-color: white !important;
+    
+    
+}
+
+    #dropdownCustom li a:hover {
+        background-color: #0d1117 !important;
+        transform:none;
+    }
+
+.nav-item.dropdown ul{
+    z-index:999999 !important;
+}
+
+.zoom-in {
+    transition: transform 0.3s ease-in-out !important;
+}
+
+.zoom-in:hover{
+    transform:scale(1.2) !important;
+}
+
+#registerSubmit:hover {
+    background-color: #0d1117 !important;
+}
+
+#registerSubmit {
+    background-color: rgba(0, 255, 255, 0.3) !important;
+    border-color: rgba(0, 255, 255, 0.3) !important;
+    box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.3);
+}
+
+.dropdown-menu.show {
+    z-index:99999 !important;
+    display: block;
+}
+
+.table td a {
+    border: 1px solid white;
+    padding: 5px;
+    margin: 2px;
+    color: white;
+    text-decoration: none;
+    display: inline-block; 
+    transition: transform 0.15s ease-in-out;
+}
+
+.table td a:hover{
+    transform: scale(1.1);
+}
+
+.a-button {
+    border: 1px solid white !important; 
+    padding: 5px !important;
+    margin: 2px !important;
+    color: white !important;
+    text-decoration: none !important;
+    width: 120px;
+    text-align: center !important;
+    background-color: #0d1117;
+}
+
+    .a-button:hover {
+        background-color: rgba(0, 255, 255, 0.3) !important;
+        box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.3);
+    }
+
+.form-control:disabled {
+    background-color: #0d1117 !important;
+}
+
+.footer {
+    text-align: center;
+}
+
+.filter-grid select option:hover {
+    background-color: #0d1117 !important;
+}
+
+.custom-button {
+    background-color: #0d1117 !important;
+    border-color: rgba(0, 255, 255, 0.3) !important;
+    transition: transform 0.3s ease-in-out;
+}
+
+    .custom-button:hover {
+        box-shadow: 0px 1px 3px rgba(0, 255, 255, 0.3);
+    }
+
+.form-buttonSubmit {
+    background-color: #0d1117 !important;
+    border-color: rgba(0, 255, 255, 0.3) !important;
+    transition: background-color 0.3s ease-in-out,
+                border-color 0.3s ease-in-out, 
+                color 0.3s ease-in-out, 
+                box-shadow 0.3s ease-in-out;
+}
+
+    .form-buttonSubmit:hover {
+        box-shadow: 0px 1px 3px rgba(0, 255, 255, 0.3);
+        border-color: #0d1117 !important;
+        background-color: rgba(0, 255, 255, 0.3) !important;
+        color: #0d1117;
+    }
+
+.form-buttonBack {
+    margin-top:15px !important;
+}
+
+.form-buttonBack a {
+    color: white !important;
+    text-decoration: none;
+
+}
+
+#registerForm {
+    padding: 12px;
+}
+
+.login-form {
+    padding: 12px !important;
+}
+
+#login-submit {
+    background-color: rgba(0, 255, 255, 0.3) !important;
+    border-color: rgba(0, 255, 255, 0.3) !important;
+    box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.3);
+}
+
+#login-submit:hover {
+    background-color: #0d1117 !important;
+}
+
+.validation-summary-errors ul {
+    list-style: none; 
+    padding: 0;
+    padding-bottom: 10px; 
+    margin: 0 auto;  
+    text-align: center; 
+    display: block; 
+    width: fit-content; 
+}
+
+.validation-summary-errors ul li {
+    text-align: center;
+    width: 100% !important;
+}
+
+input:-webkit-autofill {
+    background-color: #0d1117 !important;
+    -webkit-box-shadow: 0 0 0px 1000px #0d1117 inset !important;
+    box-shadow: 0 0 0px 1000px #0d1117 inset !important;
+    color: white !important; 
+    -webkit-text-fill-color: white !important; 
+}
+
+header{
+    position: relative;
+    z-index: 999999;
+}
+
+.navbar-toggler-icon {
+    /* SVG je zato koristimo invert, color ne radi jer je slika*/
+    filter: invert(1);
+}
+
+.navbar-toggler {
+    border-color: white !important;
+}
+
+@media (max-width: 768px) {
+    .navbar-collapse {
+        display: none !important;
+    }
+
+        .navbar-collapse.show {
+            display: flex !important;
+            flex-direction: column;
+            width: 100%;
+            text-align: center;
+        }
+
+    .navbar-nav {
+        flex-direction: column !important;
+    }
+
+    .navbar-toggler {
+        display: block !important;
+    }
+
+    #accstyle{
+        padding: 0 !important;
+    }
+    
+    #accstyle ul li {
+        text-align:center;
+    }
 }
